@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Feather as Icon } from '@expo/vector-icons'
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Keyboard, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { FloatingAction } from "react-native-floating-action";
 
 export default function Home({ navigation }) {
    const [initialPosition, setInitialPosition] = useState([0, 0])
+   const [state, setState] = useState();
 
    const actions = [
       {
-        text: "Menu",
-        icon: <Icon name="chevron-right" color="#FFF" size={24} />,
-        name: "bt_menu",
-        position: 1
+         text: "Menu",
+         icon: <Icon name="menu" color="#AD00FF" size={24} />,
+         name: "bt_menu",
+         position: 1
       },
-    ];
+   ];
 
    useEffect(() => {
       async function loadPosition() {
@@ -43,6 +45,7 @@ export default function Home({ navigation }) {
 
    return (
       <>
+         
          <View style={styles.mapContainer}>
             {initialPosition[0] !== 0 && (
                <MapView
@@ -62,6 +65,16 @@ export default function Home({ navigation }) {
                </MapView>
             )}
 
+         </View>
+         <View style={styles.floatingMenu}>
+            <FloatingAction
+               actions={actions}
+               color="#FFF"
+               overrideWithAction
+               onPressItem={name => {
+                  Alert.alert("Icon pressed", `the icon ${name} was pressed`);
+               }}
+            />
          </View>
          <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation")}>
             <Text style={styles.buttonText}>
@@ -123,18 +136,20 @@ export default function Home({ navigation }) {
             style={styles.buttonMenu}
             renderIcon={active => active ? (<Icon name="menu" color="#AD00FF" size={24} />): (<Icon name="menu" color="#AD00FF" size={24} />)}
             onPress={() => { console.log("hi")}}/> */}
-         <FloatingAction
-            actions={actions}
-            overrideWithAction
-            onPressItem={name => {
-              Alert.alert("Icon pressed", `the icon ${name} was pressed`);
-            }}
-         />
+
       </>
    );
 }
 
 const styles = StyleSheet.create({
+   floatingMenu: {
+      width: '100%',
+      justifyContent: 'center', 
+      alignItems: 'center',
+      alignSelf: 'center',
+      position: 'absolute',
+      top: 110 + Constants.statusBarHeight
+   },
    container: {
       maxHeight: '20%'
    },
@@ -209,7 +224,8 @@ const styles = StyleSheet.create({
       flex: 1,
       width: '100%',
       borderRadius: 10,
-      overflow: 'hidden',
+      // overflow: 'hidden',
+      justifyContent: 'flex-start'
    },
 
    map: {

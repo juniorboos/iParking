@@ -1,11 +1,75 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Constants from 'expo-constants';
-import { View, ImageBackground, Text, Image, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, ImageBackground, Text, Image, Alert, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { CommonActions } from "@react-navigation/native";
+import firebase from "../../services/firebase.js";
 
 import Input from "../../components/Input";
 import Button from '../../components/Button';
 
 export default function Login({ navigation }) {
+   const [user, setUser] = useState("junior_boos@live.com");
+   const [pass, setPass] = useState("123456");
+
+
+   const createButtonAlert = (title, msg) => {
+      Alert.alert(title, msg, [{ text: "OK" }], { cancelable: false });
+   };
+
+   // function sendToCorretRoute() {
+   //    firebase
+   //       .firestore()
+   //       .collection("Users")
+   //       .get()
+   //       .then((querySnapshot) => {
+   //          querySnapshot.forEach((documentSnapshot) => {
+   //             if (documentSnapshot.data().email == user) {
+   //                navigation.dispatch(
+   //                   CommonActions.reset({
+   //                      index: 0,
+   //                      routes: [{ name: "Home" }],
+   //                   })
+   //                );
+   //             }
+   //          });
+   //       })
+   //       .catch(() => {
+   //          console.log("Erro ao buscar Users");
+   //       });
+   // }
+
+   const loginUser = () => {
+      if (user == "" || pass == "") {
+         return createButtonAlert("Error", "Empty Field!");
+      }
+
+      firebase
+         .auth()
+         .signInWithEmailAndPassword(user, pass)
+         .then(() => {
+            console.log("Autenticado - Enviando para rota correta...");
+            navigation.dispatch(
+               CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: "Home" }],
+               })
+            );
+         })
+         .catch((error) => {
+            if (
+               error == "auth/wrong-password" ||
+               error ==
+               "The password is invalid or the user does not have a password."
+            ) {
+               return createButtonAlert("Error", "Wrong Password!");
+            }
+            if (error == "auth/invalid-email") {
+               return createButtonAlert("Error", "Invalid Email!");
+            }
+            console.log(error);
+            alert(error);
+         });
+   };
 
    return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -21,24 +85,29 @@ export default function Login({ navigation }) {
                   label="E-mail"
                   placeholder="user@domain.com"
                   keyboardType={"email-address"}
+                  value={user}
+                  onChangeText={(text) => setUser(text)}
                />
                <Input
                   label="Password"
                   placeholder="*******"
-                  secureTextEntry={true}
                   autoCompleteType={"off"}
+                  value={pass}
+                  secureTextEntry={true}
+                  onChangeText={(text) => setPass(text)}
+                  
                />
                <Button
                   backgroundColor="#AD00FF"
-						color="#FFFFFF"
-						fontSize={24}
-						justify="center"
-                  onPress={() => navigation.navigate("Home")}>
-                     Login
+                  color="#FFFFFF"
+                  fontSize={24}
+                  justify="center"
+                  onPress={loginUser}>
+                  Login
                </Button>
             </View>
             <View style={styles.footer}>
-               <Text style={styles.description}>Don’t have an account? 
+               <Text style={styles.description}>Don’t have an account?
                   <Text style={styles.signup} onPress={() => navigation.navigate("Register")}> Sign up!</Text>
                </Text>
             </View>
@@ -124,5 +193,5 @@ const styles = StyleSheet.create({
       fontFamily: 'Roboto_500Medium',
       fontSize: 16,
    }
-   
+
 });

@@ -1,43 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import { Feather } from '@expo/vector-icons';
 import { View, TextInput, Text, StyleSheet } from "react-native";
-import RNPickerSelect from 'react-native-picker-select';
+import { Picker } from 'react-native'
 
-export default function Input({ label = "", ...props }) {
-	return (
-		<View>
-			<Text style={styles.label}>{label}</Text>
-			<RNPickerSelect
-               onValueChange={(value) => console.log(value)}
-               style={{
-                  ...pickerSelectStyles,
-                  iconContainer: {
-                     top: 20,
-                     right: 20,
-                  },
-               }}
-               useNativeAndroidPickerStyle={false}
-               Icon={() => {
-                  return <Feather name="chevron-down" size={24} color="#AD00FF" />;
-               }}
-               items={[
-                  { label: 'Football', value: 'football' },
-                  { label: 'Baseball', value: 'baseball' },
-                  { label: 'Hockey', value: 'hockey' },
-               ]}
+export default function SelectInput({ label = "", ...props }) {
+   return (
+      <View>
+         <Text style={styles.label}>{label}</Text>
+         <View style={styles.container}>
+            <Picker
+            style={{ height: 64, marginHorizontal:20 }}
                {...props}
-            />
-		</View>
-	);
+            >
+               <Picker.Item label="IPB" value="ipb" />
+               <Picker.Item label="ESTiG" value="estig" />
+               <Picker.Item label="Bicycle" value="bicycle" />
+            </Picker>
+         </View>
+      </View>
+   );
 }
 
 const styles = StyleSheet.create({
-	label: {
-		color: "#6C6C80",
-		fontSize: 14,
-		marginTop: 14,
-		marginBottom: 8,
-	},
+   label: {
+      color: "#6C6C80",
+      fontSize: 14,
+      marginTop: 14,
+      marginBottom: 8,
+   },
+   container: {
+      justifyContent:'center',
+      borderRadius: 20,
+      backgroundColor: '#FFF',
+      height: 64,
+   }
 });
 
 const pickerSelectStyles = StyleSheet.create({
@@ -57,7 +53,7 @@ const pickerSelectStyles = StyleSheet.create({
       backgroundColor: '#FFF',
       fontSize: 16,
       marginBottom: 8,
-		paddingHorizontal: 24,
+      paddingHorizontal: 24,
       borderColor: 'purple',
       borderRadius: 20,
       color: 'black',
