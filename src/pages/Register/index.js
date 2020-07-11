@@ -73,11 +73,12 @@ export default function Register({ navigation }) {
          .createUserWithEmailAndPassword(form.email, form.password)
          .then(authUser => {
             var user = firebase.auth().currentUser;
+            const userId = firebase.auth().currentUser.uid;
             if (user != null) {
                user.updateProfile({
                   displayName: form.fullName,
                }).then(function () {
-                  db.collection('Users').add(
+                  db.collection('Users').doc(userId).set(
                      { email: form.email, fullName: form.fullName, phone: form.phone }
                   ).then(() => {
                      createButtonAlert("Success", "Registration Successful!!");

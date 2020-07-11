@@ -1,31 +1,27 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import Login from './pages/Login';
-import Register from './pages/Register';
-import Home from './pages/Home';
+import RoutesDrawer from './routesDrawer';
 import NewReservation from './pages/NewReservation';
 
-const AppStack = createStackNavigator();
+const Stack = createStackNavigator();
 
 const Routes = () => {
    return (
-      <NavigationContainer>
-         <AppStack.Navigator 
-            headerMode="none" 
-            screenOptions={{
-               cardStyle: {
-                  backgroundColor: '#EBEBEB'
-               }
-            }}
-         >
-            <AppStack.Screen name="Login" component={Login} />
-            <AppStack.Screen name="Register" component={Register} />
-            <AppStack.Screen name="Home" component={Home} />
-            <AppStack.Screen name="NewReservation" component={NewReservation} />
-         </AppStack.Navigator>
-      </NavigationContainer>
+      <Stack.Navigator
+         headerMode="none"
+         screenOptions={{
+            cardStyle: {
+               backgroundColor: '#EBEBEB'
+            }
+         }}
+      >
+         <Stack.Screen name="Login" component={Login} />
+         <Stack.Screen name="RoutesDrawer" component={RoutesDrawer} />
+         <Stack.Screen name="NewReservation" component={NewReservation} />
+
+      </Stack.Navigator>
    )
 }
 

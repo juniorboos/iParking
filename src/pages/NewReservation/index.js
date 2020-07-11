@@ -11,7 +11,7 @@ import DatePicker from 'react-native-datepicker';
 // import { Picker } from '@react-native-community/picker';
 import { Picker } from 'react-native'
 import SelectInput from '../../components/SelectInput';
-import firebase from "../../services/firebase.js";
+import firebase, { db } from "../../services/firebase.js";
 
 export default function NewReservation({ navigation }) {
    const userId = firebase.auth().currentUser.uid;
@@ -28,6 +28,17 @@ export default function NewReservation({ navigation }) {
    // const [priorityPrice, setPriorityPrice] = useState(50);
 
 
+   const createButtonAlert = (title, msg) => {
+      Alert.alert(
+         title,
+         msg,
+         [
+            { text: "OK" }
+         ],
+         { cancelable: false }
+      );
+   }
+
    async function sendNewReservation () {
       console.log('Parking: ' + parking);
       console.log('Region: ' + region);
@@ -42,21 +53,42 @@ export default function NewReservation({ navigation }) {
       console.log('Priority price: ' + (100 - priorityLocation));
       console.log('User id: ' + userId);
 
+      db.collection('Users').doc(userId).collection('Reservations').add({
+         parking: parking,
+         region: region,
+         vehicle: vehicle,
+         spotWanted: spot,
+         maxPrice: maxPrice,
+         date: date,
+         timeFrom: timeFrom,
+         timeTo: timeTo,
+         distanceRange: range,
+         locationWeight: priorityLocation,
+         priceWeight: 100 - priorityLocation
+      }).then(() => {
+         createButtonAlert("Success", "Registration Successful!!");
+         return navigation.navigate('Home');
+      }).catch(erro => {
+         setIsLoading(false);
+         console.log(erro);
+         return createButtonAlert("Error", "Erro ao cadastrar usuario no banco de dados.");
+      });
+
       // const response = await fetch('https://us-central1-mqtt-teste-iot.cloudfunctions.net/requisitarSpot', {
       //    method: 'POST',
       //    body: JSON.stringify({
       //       userId: userId,
-      //       parking: parking,
-      //       region: region,
-      //       vehicle: vehicle,
-      //       spotWanted: spot,
-      //       maxPrice: maxPrice,
-      //       date: date,
-      //       timeFrom: timeFrom,
-      //       timeTo: timeTo,
-      //       distanceRange: range,
-      //       locationWeight: priorityLocation,
-      //       priceWeight: 100 - priorityLocation
+            // parking: parking,
+            // region: region,
+            // vehicle: vehicle,
+            // spotWanted: spot,
+            // maxPrice: maxPrice,
+            // date: date,
+            // timeFrom: timeFrom,
+            // timeTo: timeTo,
+            // distanceRange: range,
+            // locationWeight: priorityLocation,
+            // priceWeight: 100 - priorityLocation
       //    })
       // }).then((response) => response.json())
       //    .then((json) => {

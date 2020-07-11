@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Feather as Icon } from '@expo/vector-icons'
-import { View, Text, StyleSheet, Keyboard, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
-import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
-import { FloatingAction } from "react-native-floating-action";
+import { RectButton } from 'react-native-gesture-handler';
 
 export default function Home({ navigation }) {
    const [initialPosition, setInitialPosition] = useState([0, 0])
    const [state, setState] = useState();
-
-   const actions = [
-      {
-         text: "Menu",
-         icon: <Icon name="menu" color="#AD00FF" size={24} />,
-         name: "bt_menu",
-         position: 1
-      },
-   ];
 
    useEffect(() => {
       async function loadPosition() {
@@ -65,16 +55,6 @@ export default function Home({ navigation }) {
                </MapView>
             )}
 
-         </View>
-         <View style={styles.floatingMenu}>
-            <FloatingAction
-               actions={actions}
-               color="#FFF"
-               overrideWithAction
-               onPressItem={name => {
-                  Alert.alert("Icon pressed", `the icon ${name} was pressed`);
-               }}
-            />
          </View>
          <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation")}>
             <Text style={styles.buttonText}>
@@ -129,19 +109,39 @@ export default function Home({ navigation }) {
                </View>
             </TouchableOpacity>
          </View>
-         {/* <ActionButton 
-            buttonColor="#FFF"
-            size={50}
-            offsetY={50}
-            style={styles.buttonMenu}
-            renderIcon={active => active ? (<Icon name="menu" color="#AD00FF" size={24} />): (<Icon name="menu" color="#AD00FF" size={24} />)}
-            onPress={() => { console.log("hi")}}/> */}
-
+         <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => navigation.toggleDrawer()}
+          style={styles.TouchableOpacityStyle}>
+            <Icon 
+               name="menu" 
+               color="#AD00FF" 
+               size={24}
+               style={styles.FloatingButtonStyle} />
+        </TouchableOpacity>
       </>
    );
 }
 
 const styles = StyleSheet.create({
+   FloatingButtonStyle: {
+      // resizeMode: 'contain',
+      width: 50,
+      height: 50,
+      backgroundColor:'white',
+      borderRadius: 30,
+      textAlign: 'center',
+      textAlignVertical: 'center'
+    },
+   TouchableOpacityStyle: {
+      position: 'absolute',
+      width: 50,
+      height: 50,
+      alignItems: 'center',
+      justifyContent: 'center',
+      right: 30,
+      top: 30 + Constants.statusBarHeight,
+    },
    floatingMenu: {
       width: '100%',
       justifyContent: 'center', 
