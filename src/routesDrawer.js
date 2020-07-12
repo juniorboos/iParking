@@ -10,6 +10,7 @@ const Drawer = createDrawerNavigator();
 const RoutesDrawer = () => {
    return (
       <Drawer.Navigator
+         drawerContent={(props) => <SideMenu {...props} />}
          drawerPosition='right'
          screenOptions={{
             cardStyle: {
