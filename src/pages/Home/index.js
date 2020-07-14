@@ -12,21 +12,25 @@ export default function Home({ navigation }) {
 
    useEffect(() => {
       async function loadPosition() {
-         const { status } = await Location.requestPermissionsAsync();
+         try {
+            const { status } = await Location.requestPermissionsAsync();
 
-         if (status !== 'granted') {
-            Alert.alert('Ooooops...', 'Precisamos de sua permissão para obter a localização');
+            if (status !== 'granted') {
+               Alert.alert('Ooooops...', 'Precisamos de sua permissão para obter a localização');
             return;
+            }
+
+            const location = await Location.getCurrentPositionAsync();
+
+            const { latitude, longitude } = location.coords;
+
+            setInitialPosition([
+               latitude,
+               longitude
+            ])
+         } catch (error) {
+            loadPosition();
          }
-
-         const location = await Location.getCurrentPositionAsync();
-
-         const { latitude, longitude } = location.coords;
-
-         setInitialPosition([
-            latitude,
-            longitude
-         ])
       }
 
       loadPosition();

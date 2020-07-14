@@ -2,6 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import Login from './pages/Login';
+import Register from './pages/Register';
 import RoutesDrawer from './routesDrawer';
 import NewReservation from './pages/NewReservation';
 
@@ -18,6 +19,7 @@ const Routes = () => {
          }}
       >
          <Stack.Screen name="Login" component={Login} />
+         <Stack.Screen name="Register" component={Register} />
          <Stack.Screen name="RoutesDrawer" component={RoutesDrawer} />
          <Stack.Screen name="NewReservation" component={NewReservation} />
 

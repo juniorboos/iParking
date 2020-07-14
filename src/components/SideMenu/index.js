@@ -1,68 +1,109 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Feather, MaterialIcons, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
+import { CommonActions } from "@react-navigation/native";
 import {
    DrawerContentScrollView,
    DrawerItem
 } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
+import firebase from '../../services/firebase';
 
 export function SideMenu(props) {
-   const [selectedPage, setSelectedPage] = useState('home');
+   const [selectedPage, setSelectedPage] = useState('Home');
+
+   const user = {
+		email: firebase.auth().currentUser.email,
+		name: firebase.auth().currentUser.displayName,
+	};
+
+   function handleNavigate ( value ) {
+      setSelectedPage(value);
+      props.navigation.navigate(value)
+   }
+
+   const createTwoButtonAlert = () =>
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to Logout ?",
+      [
+        {
+          text: "No",
+          onPress: () => console.log("Cancel Pressed"),
+        },
+        { text: "Yes", 
+          onPress: () => Logout() }
+      ],
+      { cancelable: false }
+    );
+
+   function Logout() {
+		firebase
+			.auth()
+			.signOut()
+			.then(() => {
+				props.navigation.dispatch(
+					CommonActions.reset({
+						index: 0,
+						routes: [{ name: "Login" }],
+					})
+				);
+			});
+	}
 
    return (
       <View style={styles.drawerContainer}>
          <DrawerContentScrollView {...props}>
             <View style={{ flex: 1 }}>
                <View style={styles.userInfo}>
-                  <Text style={styles.userName}>Joseph Smith</Text>
-                  <Text style={styles.userEmail}>josephsmith@gmail.com</Text>
+                  <Text style={styles.userName}>{user.name}</Text>
+                  <Text style={styles.userEmail}>{user.email}</Text>
                </View>
                <View>
-                  <TouchableOpacity style={selectedPage == 'home' ? styles.presetSelected : styles.preset} onPress={() => setSelectedPage('home')}>
+                  <TouchableOpacity style={selectedPage == 'Home' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('Home')}>
                      <View style={styles.buttonIcon}>
                         <Text>
-                           <MaterialIcons name="home" size={24} style={selectedPage == 'home' ? styles.presetIconSelected : styles.presetIcon}/>
+                           <MaterialIcons name="home" size={24} style={selectedPage == 'Home' ? styles.presetIconSelected : styles.presetIcon}/>
                         </Text>
                      </View>
                      <View style={styles.presetText}>
-                        <Text style={selectedPage == 'home' ? styles.presetTitleSelected : styles.presetTitle}>
+                        <Text style={selectedPage == 'Home' ? styles.presetTitleSelected : styles.presetTitle}>
                            Home
                         </Text>
                      </View>
                   </TouchableOpacity>
-                  <TouchableOpacity style={selectedPage == 'balance' ? styles.presetSelected : styles.preset} onPress={() => setSelectedPage('balance')}>
+                  <TouchableOpacity style={selectedPage == 'Balance' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('Balance')}>
                      <View style={styles.buttonIcon}>
                         <Text>
-                           <MaterialIcons name="account-balance-wallet" size={24} style={selectedPage == 'balance' ? styles.presetIconSelected : styles.presetIcon} />
+                           <MaterialIcons name="account-balance-wallet" size={24} style={selectedPage == 'Balance' ? styles.presetIconSelected : styles.presetIcon} />
                         </Text>
                      </View>
                      <View style={styles.presetText}>
-                        <Text style={selectedPage == 'balance' ? styles.presetTitleSelected : styles.presetTitle}>
+                        <Text style={selectedPage == 'Balance' ? styles.presetTitleSelected : styles.presetTitle}>
                            Balance
                         </Text>
                      </View>
                   </TouchableOpacity>
-                  <TouchableOpacity style={selectedPage == 'history' ? styles.presetSelected : styles.preset} onPress={() => setSelectedPage('history')}>
+                  <TouchableOpacity style={selectedPage == 'History' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('History')}>
                      <View style={styles.buttonIcon}>
                         <Text>
-                           <MaterialIcons name="history" size={24} style={selectedPage == 'history' ? styles.presetIconSelected : styles.presetIcon} />
+                           <MaterialIcons name="history" size={24} style={selectedPage == 'History' ? styles.presetIconSelected : styles.presetIcon} />
                         </Text>
                      </View>
                      <View style={styles.presetText}>
-                        <Text style={selectedPage == 'history' ? styles.presetTitleSelected : styles.presetTitle}>
+                        <Text style={selectedPage == 'History' ? styles.presetTitleSelected : styles.presetTitle}>
                            History
                         </Text>
                      </View>
                   </TouchableOpacity>
-                  <TouchableOpacity style={selectedPage == 'profile' ? styles.presetSelected : styles.preset} onPress={() => setSelectedPage('profile')}>
+                  <TouchableOpacity style={selectedPage == 'Profile' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('Profile')}>
                      <View style={styles.buttonIcon}>
                         <Text>
-                           <AntDesign name="user" size={24} style={selectedPage == 'profile' ? styles.presetIconSelected : styles.presetIcon} />
+                           <AntDesign name="user" size={24} style={selectedPage == 'Profile' ? styles.presetIconSelected : styles.presetIcon} />
                         </Text>
                      </View>
                      <View style={styles.presetText}>
-                        <Text style={selectedPage == 'profile' ? styles.presetTitleSelected : styles.presetTitle}>
+                        <Text style={selectedPage == 'Profile' ? styles.presetTitleSelected : styles.presetTitle}>
                            Profile
                         </Text>
                      </View>
@@ -71,19 +112,19 @@ export function SideMenu(props) {
             </View>
          </DrawerContentScrollView>
          <View style={styles.bottomDrawerSection}>
-            <TouchableOpacity style={selectedPage == 'settings' ? styles.presetSelected : styles.preset} onPress={() => setSelectedPage('settings')}>
+            <TouchableOpacity style={selectedPage == 'Settings' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('Settings')}>
                <View style={styles.buttonIcon}>
                   <Text>
-                     <MaterialIcons name="settings" size={24} style={selectedPage == 'settings' ? styles.presetIconSelected : styles.presetIcon} />
+                     <MaterialIcons name="settings" size={24} style={selectedPage == 'Settings' ? styles.presetIconSelected : styles.presetIcon} />
                   </Text>
                </View>
                <View style={styles.presetText}>
-                  <Text style={selectedPage == 'settings' ? styles.presetTitleSelected : styles.presetTitle}>
+                  <Text style={selectedPage == 'Settings' ? styles.presetTitleSelected : styles.presetTitle}>
                      Settings
                   </Text>
                </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.preset}>
+            <TouchableOpacity style={styles.preset} onPress={() => createTwoButtonAlert()}>
                <View style={styles.buttonIcon}>
                   <Text>
                      <MaterialCommunityIcons name="logout-variant" size={24} style={styles.presetIcon} />

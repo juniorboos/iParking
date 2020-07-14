@@ -3,7 +3,10 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import { SideMenu } from './components/SideMenu';
 import Home from './pages/Home';
-import NewReservation from './pages/NewReservation';
+import Balance from './pages/Balance';
+import History from './pages/History';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 const Drawer = createDrawerNavigator();
 
@@ -18,6 +21,10 @@ const RoutesDrawer = () => {
             },
          }}>
          <Drawer.Screen name="Home" component={Home} />
+         <Drawer.Screen name="Balance" component={Balance} />
+         <Drawer.Screen name="History" component={History} />
+         <Drawer.Screen name="Profile" component={Profile} />
+         <Drawer.Screen name="Settings" component={Settings} />
       </Drawer.Navigator>
    )
 }
