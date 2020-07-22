@@ -7,6 +7,7 @@ import { Raleway_800ExtraBold, Raleway_500Medium, Raleway_600SemiBold, useFonts 
 import Routes from './src/routes';
 
 export default function App() {
+  console.disableYellowBox = true;
   const [fontsLoaded] = useFonts ({
     Raleway_800ExtraBold,
     Raleway_600SemiBold,

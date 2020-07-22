@@ -12,7 +12,19 @@ export default function Profile({ navigation }) {
           colors={['#AD00FF', '#E950D0', '#C7A9D6' ]}
           style={styles.linearGradient}
         >
-           
+           <View style={styles.wrapper}>
+               <View style={styles.side}>
+                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                     <Feather name="chevron-left" size={24} color="#AD00FF" />
+                  </TouchableOpacity>
+               </View>
+               <View style={styles.center}>
+                  <Text styles={styles.profileName}>Joseph Joestar</Text>
+               </View>
+               <View style={styles.side}>
+               
+               </View>
+            </View>
           <Text>Profile page</Text>
         </LinearGradient>
       </View>
@@ -21,16 +33,42 @@ export default function Profile({ navigation }) {
 
 const styles = StyleSheet.create({
    container: {
-      flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
    },
-   
    linearGradient: {
+      paddingRight: 32,
+      paddingLeft: 32,
+      paddingBottom: 8,
+      paddingTop: 24 + Constants.statusBarHeight,
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: 5,
-      height: '100%',
+      height: 160,
       width: '100%',
    },
+   wrapper: {
+      width: "100%",
+      height: 52,
+      flexDirection: 'row',
+      alignContent: 'center',
+      justifyContent: "space-between"
+    },
+    center: {
+      alignContent: 'center',
+      justifyContent: "center",
+    },
+    side: {
+      width: 42,
+      height: 52,
+      alignItems: "flex-start",
+      justifyContent: "center"
+    },
+    profileName: {
+      // fontFamily: 'Raleway',
+      fontStyle: 'normal',
+      fontWeight: 'bold',
+      fontSize: 24,
+      lineHeight: 28,
+      color: '#FFFFFF'
+    }
 })

@@ -7,11 +7,13 @@ import AppBar from "../../components/AppBar";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import NumericInput from 'react-native-numeric-input';
-import DatePicker from 'react-native-datepicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 // import { Picker } from '@react-native-community/picker';
 import { Picker } from 'react-native'
 import SelectInput from '../../components/SelectInput';
 import firebase, { db } from "../../services/firebase.js";
+import api from "../../services/api";
+// import MQTT from 'sq-react-native-mqtt';
 
 export default function NewReservation({ navigation }) {
    const userId = firebase.auth().currentUser.uid;
@@ -20,14 +22,19 @@ export default function NewReservation({ navigation }) {
    const [vehicle, setVehicle] = useState('bicycle')
    const [spot, setSpot] = useState();
    const [maxPrice, setMaxPrice] = useState();
-   const [date, setDate] = useState('15-05-2018');
-   const [timeFrom, setTimeFrom] = useState('12:00');
-   const [timeTo, setTimeTo] = useState('14:00');
+   const [date, setDate] = useState(new Date());
+   const [timeFrom, setTimeFrom] = useState(new Date());
+   const [timeTo, setTimeTo] = useState(new Date());
    const [range, setRange] = useState(500);
    const [priorityLocation, setPriorityLocation] = useState(50);
-   // const [priorityPrice, setPriorityPrice] = useState(50);
+   
+   const [mode, setMode] = useState('date');
+   const [show, setShow] = useState(false);
+   const [dateMode, setDateMode] = useState();
 
-
+   const spotId = 0;
+   const status = "entrar";
+   
    const createButtonAlert = (title, msg) => {
       Alert.alert(
          title,
@@ -38,7 +45,55 @@ export default function NewReservation({ navigation }) {
          { cancelable: false }
       );
    }
+  
+   function handleSpot () {
+      const data = {
+         initialDate: date,
+         endDate: date,
+         initialTime: timeFrom,
+         endTime: timeTo,
+         spotId: spotId,
+         driver: userId
+      }
 
+      if (status == "entrar") {
+         console.log("Entrando no spot...")
+         api.post('usespot', data).then(response => {
+            const responseBody = JSON.parse(response.data)
+            console.log(responseBody);
+            if (responseBody.reservation == true) {
+               createButtonAlert("Success", `${responseBody.spot} - R$ ${responseBody.price}`);
+            }else {
+               createButtonAlert("Failed", "Error in reservation.");
+            }
+         }).then(() => {
+            status = "sair"
+            // return navigation.navigate('Home');
+         })
+      }
+
+      if (status == "sair") {
+         console.log("Saindo do spot...")
+         api.post('leavespot', data).then(response => {
+            const responseBody = JSON.parse(response.data)
+            console.log(responseBody);
+            if (responseBody == "arriving") {
+               createButtonAlert("Success", "Entrando na vaga.");
+            }
+            if (responseBody == "departuring") {
+               createButtonAlert("Success", "Saindo da vaga.");
+            }
+         }).then(() => {
+            status = "entrar"
+            // return navigation.navigate('Home');
+         })
+      }
+
+
+
+      
+   }
+   
    async function sendNewReservation () {
       console.log('Parking: ' + parking);
       console.log('Region: ' + region);
@@ -59,51 +114,82 @@ export default function NewReservation({ navigation }) {
          vehicle: vehicle,
          spotWanted: spot,
          maxPrice: maxPrice,
-         date: date,
-         timeFrom: timeFrom,
-         timeTo: timeTo,
+         date: (date.toISOString().split('T')[0]).toString(),
+         timeFrom: (timeFrom.getHours() + ":" + timeFrom.getMinutes()).toString(),
+         timeTo: (timeTo.getHours() + ":" + timeTo.getMinutes()).toString(),
          distanceRange: range,
          locationWeight: priorityLocation,
          priceWeight: 100 - priorityLocation
       }).then(() => {
-         createButtonAlert("Success", "Registration Successful!!");
-         return navigation.navigate('Home');
+         const data = {
+            driver: userId,
+            location: region,
+            price: maxPrice,
+            initialDate: (date.toISOString().split('T')[0]).toString(),
+            endDate: (date.toISOString().split('T')[0]).toString(),
+            initialTime: (timeFrom.getHours() + ":" + timeFrom.getMinutes()).toString(),
+            endTime: (timeTo.getHours() + ":" + timeTo.getMinutes()).toString()
+         }
+
+         api.post('request', data).then(response => {
+            const responseBody = JSON.parse(response.data)
+            console.log(responseBody);
+            if (responseBody.reservation == true) {
+               createButtonAlert("Success", `${responseBody.spot} - R$ ${responseBody.price}`);
+               spotId = responseBody.spot;
+            }else {
+               createButtonAlert("Failed", "Error in reservation.");
+            }
+         }).then(() => {
+            // return navigation.navigate('Home');
+         })
+         
       }).catch(erro => {
          setIsLoading(false);
          console.log(erro);
          return createButtonAlert("Error", "Erro ao cadastrar usuario no banco de dados.");
       });
-
-      // const response = await fetch('https://us-central1-mqtt-teste-iot.cloudfunctions.net/requisitarSpot', {
-      //    method: 'POST',
-      //    body: JSON.stringify({
-      //       userId: userId,
-            // parking: parking,
-            // region: region,
-            // vehicle: vehicle,
-            // spotWanted: spot,
-            // maxPrice: maxPrice,
-            // date: date,
-            // timeFrom: timeFrom,
-            // timeTo: timeTo,
-            // distanceRange: range,
-            // locationWeight: priorityLocation,
-            // priceWeight: 100 - priorityLocation
-      //    })
-      // }).then((response) => response.json())
-      //    .then((json) => {
-      //       console.log(json.message + json.messageId);
-      //    })
-      //    .catch((error) => {
-      //       console.error(error)
-      //    })
-
    }
-
 
    function handleNavigationBack() {
       navigation.goBack();
    }
+
+   const onChangeDate = (event, selectedDate) => {
+      const currentDate = selectedDate || date;
+      setShow(Platform.OS === 'ios');
+      switch (dateMode) {
+         case 'date':
+            setDate(currentDate);
+            break;
+         case 'timeFrom':
+            setTimeFrom(currentDate);
+            break;
+         case 'timeTo':
+            setTimeTo(currentDate);
+            break;
+      }
+   }
+
+   const showMode = currentMode => {
+      setShow(true);
+      setMode(currentMode);
+   };
+
+   const showDatepicker = () => {
+      showMode('date');
+      setDateMode('date');
+   };
+
+   const showTimeFrompicker = () => {
+      showMode('time');
+      setDateMode('timeFrom')
+   };
+
+   const showTimeTopicker = () => {
+      showMode('time');
+      setDateMode('timeTo')
+   };
 
    return (
       <View style={styles.wrapper}>
@@ -158,101 +244,36 @@ export default function NewReservation({ navigation }) {
                </View>
             </View>
             <Text style={styles.label}>Date</Text>
-            <DatePicker
-               style={styles.pickerDate}
-               date={date} //initial date from state
-               mode="date" //The enum of date, datetime and time
-               placeholder="select date"
-               format="DD/MM/YYYY"
-               minDate="06-01-2020"
-               maxDate="01-01-2021"
-               confirmBtnText="Confirm"
-               cancelBtnText="Cancel"
-               customStyles={{
-                  dateIcon: {
-                     position: 'absolute',
-                     right: 10,
-                     top: 4,
-                     marginLeft: 0,
-                  },
-                  dateInput: {
-                     paddingStart: 20,
-                     alignItems: "flex-start",
-                     alignSelf: "center",
-                     justifyContent: "center",
-                     borderRadius: 20,
-                     borderWidth: 0,
-                     height: 64,
-                  },
-                  dateText: {
-                     fontSize: 20
-                  }
-               }}
-               onDateChange={setDate}
-            />
-
+            <TouchableOpacity style={styles.input} onPress={showDatepicker}>
+               <Text style={styles.dateText}>
+                  {date.toDateString()}
+               </Text>
+            </TouchableOpacity>
+            {show && (
+               <DateTimePicker
+                  value={date}
+                  is24Hour={true}
+                  minimumDate={new Date()}
+                  mode={mode}
+                  display="default"
+                  onChange={onChangeDate} />
+            )}
             <View style={styles.smallInput}>
-               <View>
+               <View style={styles.smallInputContainer}>
                   <Text style={styles.label}>From</Text>
-                  <DatePicker
-                     style={styles.pickerTime}
-                     date={timeFrom} //initial date from state
-                     mode="time" //The enum of date, datetime and time
-                     placeholder="select time"
-                     format="HH:mm"
-                     confirmBtnText="Confirm"
-                     cancelBtnText="Cancel"
-                     customStyles={{
-                        dateIcon: {
-                           display: 'none'
-                        },
-                        dateInput: {
-                           alignItems: "flex-start",
-                           alignSelf: "center",
-                           justifyContent: "center",
-                           borderRadius: 20,
-                           borderWidth: 0,
-                           height: 64,
-                           alignItems: 'center'
-                        },
-
-                        dateText: {
-                           fontSize: 20
-                        }
-                     }}
-                     onDateChange={setTimeFrom}
-                  />
+                  <TouchableOpacity style={styles.pickerTime} onPress={showTimeFrompicker}>
+                     <Text style={styles.dateText}>
+                        {timeFrom.getHours() + ":" + timeFrom.getMinutes()}
+                     </Text>
+                  </TouchableOpacity>
                </View>
-               <View>
-                  <Text style={styles.label}>To</Text>
-                  <DatePicker
-                     style={styles.pickerTime}
-                     date={timeTo} //initial date from state
-                     mode="time" //The enum of date, datetime and time
-                     placeholder="select time"
-                     format="HH:mm"
-                     confirmBtnText="Confirm"
-                     cancelBtnText="Cancel"
-                     customStyles={{
-                        dateIcon: {
-                           display: 'none'
-                        },
-                        dateInput: {
-                           alignItems: "flex-start",
-                           alignSelf: "center",
-                           justifyContent: "center",
-                           borderRadius: 20,
-                           borderWidth: 0,
-                           height: 64,
-                           alignItems: 'center'
-                        },
-
-                        dateText: {
-                           fontSize: 20,
-                        }
-                     }}
-                     onDateChange={setTimeTo}
-                  />
+               <View style={styles.smallInputContainer}>
+                  <Text style={styles.label}>From</Text>
+                  <TouchableOpacity style={styles.pickerTime} onPress={showTimeTopicker}>
+                     <Text style={styles.dateText}>
+                        {timeTo.getHours() + ":" + timeTo.getMinutes()}
+                     </Text>
+                  </TouchableOpacity>
                </View>
             </View>
             <Text style={styles.label}>Distance range for spot:
@@ -305,14 +326,33 @@ export default function NewReservation({ navigation }) {
                onPress={() => sendNewReservation()}
             >
                Find a Spot
-         </Button>
+            </Button>
+            <Button
+               backgroundColor="#AD00FF"
+               color="#FFFFFF"
+               fontSize={24}
+               justify="center"
+               onPress={() => handleSpot()}
+            >
+               Enter / Leave
+            </Button>
          </HideWithKeyboard>
       </View>
    );
 }
 
 const styles = StyleSheet.create({
-
+   dateText: {
+      // height: '100%',
+      backgroundColor: '#FFF',
+      fontSize: 20,
+      // marginBottom: 8,
+      paddingHorizontal: 24,
+      borderColor: 'purple',
+      borderRadius: 20,
+      color: 'black',
+      paddingRight: 30,
+   },
    labelNumeric: {
       color: "#6C6C80",
       marginTop: 14,
@@ -329,13 +369,17 @@ const styles = StyleSheet.create({
       alignItems: 'center',
    },
    pickerTime: {
+      // flex: 1,
+      alignContent: 'center',
+      alignItems: 'center',
+      justifyContent: 'center',
+
+      width: '100%',
       height: 64,
       backgroundColor: "#FFF",
       borderRadius: 20,
-      paddingTop: 12,
-      alignSelf: 'center',
-      alignContent: 'center',
-      alignItems: 'center',
+      // paddingTop: 12,
+      
    },
    priceSection: {
       flex: 1,
@@ -366,9 +410,12 @@ const styles = StyleSheet.create({
       backgroundColor: '#FFF',
    },
    smallInput: {
-      flex: 1,
+      // flex: 1,
       justifyContent: "space-between",
       flexDirection: 'row',
+   },
+   smallInputContainer: {
+      width: '45%',
    },
    wrapper: {
       flex: 1,
@@ -398,11 +445,21 @@ const styles = StyleSheet.create({
    },
    footer: {
       width: "100%",
-      height: 75,
+      height: 150,
    },
    header: {
       fontSize: 24,
       color: "#AD00FF",
       fontWeight: 'bold'
    },
+   input: {
+		height: 64,
+		backgroundColor: "#FFF",
+		borderRadius: 20,
+		marginBottom: 8,
+		paddingHorizontal: 40,
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center'
+	},
 });

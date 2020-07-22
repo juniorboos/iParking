@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Feather as Icon } from '@expo/vector-icons'
+import { Feather as Icon } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Callout } from 'react-native-maps';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { RectButton } from 'react-native-gesture-handler';
+import { db } from '../../services/firebase';
+
+import CustomCallout from '../../components/CustomCallout'
 
 export default function Home({ navigation }) {
    const [initialPosition, setInitialPosition] = useState([0, 0])
+   const [parkings, setParkings] = useState([]);
    const [state, setState] = useState();
 
    useEffect(() => {
@@ -21,7 +25,7 @@ export default function Home({ navigation }) {
             }
 
             const location = await Location.getCurrentPositionAsync();
-
+            console.log(location.coords)
             const { latitude, longitude } = location.coords;
 
             setInitialPosition([
@@ -33,8 +37,38 @@ export default function Home({ navigation }) {
          }
       }
 
+      async function loadParkings () {
+         const parkingsList = [];
+         const snapshot = await db.collection('Parkings').get();
+         snapshot.forEach(doc => {
+            parkingsList.push(doc.data())
+         })
+         console.log(parkingsList)
+         setParkings(parkingsList)
+      }
+
       loadPosition();
+      loadParkings();
    }, [])
+
+   // function changeRegion (coordinates) {
+   //    const region = {
+   //       latitude: coordinates[0],
+   //       longitude: coordinates[1],
+   //       latitudeDelta: 0.014,
+   //       longitudeDelta: 0.014,
+   //    }
+   //    this.mapView.animateToRegion(region, 1000)
+   // }
+
+   // function loadSpots () {
+   //    api.post('available', data).then(response => {
+   //       const responseBody = JSON.parse(response.data)
+   //       console.log(responseBody);
+   //    }).then(() => {
+   //       // return navigation.navigate('Home');
+   //    })
+   // }
 
 
    return (
@@ -43,19 +77,44 @@ export default function Home({ navigation }) {
          <View style={styles.mapContainer}>
             {initialPosition[0] !== 0 && (
                <MapView
+                  // ref = {(ref)=> this.mapView = ref}
                   style={styles.map}
+                  minZoomLevel={13}
+                  loadingEnabled={true}
+                  showsUserLocation={true}
                   initialRegion={{
                      latitude: initialPosition[0],
                      longitude: initialPosition[1],
                      latitudeDelta: 0.014,
                      longitudeDelta: 0.014,
                   }}>
-                  <Marker
-                     pinColor="#9D11DF"
+                  {/* <Marker
+                     // pinColor="#9D11DF"
                      coordinate={{
                         latitude: initialPosition[0],
                         longitude: initialPosition[1],
-                     }} />
+                  }}>
+                     <View style={styles.radius}>
+                        <View style={styles.marker} />
+                     </View>
+                  </Marker> */}
+                  { parkings.map((parking, index) => {
+                     return (
+                        <Marker
+                           // onPress={() => changeRegion(parking.coordinates)}
+                           // onPress={() => loadSpots()}
+                           key={index}
+                           pinColor="#9D11DF"
+                           coordinate={{
+                              latitude: parking.coordinates[0],
+                              longitude: parking.coordinates[1],
+                        }} >
+                           <Callout>
+                              <CustomCallout title={parking.name}/>
+                           </Callout>
+                        </Marker>
+                     )
+                  })}
                </MapView>
             )}
 
@@ -128,6 +187,28 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+
+   radius: {
+      height: 50,
+      width: 50,
+      borderRadius: 50 / 2,
+      overflow: 'hidden',
+      backgroundColor: 'rgba(0, 122, 255, 0.1)',
+      borderWidth:1,
+      borderColor: 'rgba(0, 112, 255, 0.3)',
+      alignItems: 'center',
+      justifyContent: 'center' 
+   },
+   marker: {
+      height: 20,
+      width: 20,
+      borderWidth: 3,
+      borderColor: 'white',
+      borderRadius: 20 / 2,
+      overflow: 'hidden',
+      backgroundColor: '#007AFF'
+   },
+
    FloatingButtonStyle: {
       // resizeMode: 'contain',
       width: 50,
