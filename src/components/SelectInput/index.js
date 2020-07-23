@@ -3,18 +3,23 @@ import { Feather } from '@expo/vector-icons';
 import { View, TextInput, Text, StyleSheet } from "react-native";
 import { Picker } from 'react-native'
 
-export default function SelectInput({ label = "", ...props }) {
+export default function SelectInput({ label = "", pickerItens = [], ...props }) {
    return (
-      <View>
+      <View style={{width: '100%'}}>
          <Text style={styles.label}>{label}</Text>
          <View style={styles.container}>
             <Picker
             style={{ height: 64, marginHorizontal:20 }}
                {...props}
             >
-               <Picker.Item label="IPB" value="ipb" />
+               { pickerItens.map((item, index) => {
+                     return (
+                        <Picker.Item key={index} label={item.name} value={item.id} />
+                     )
+                  })}
+               {/* <Picker.Item label="IPB" value="ipb" />
                <Picker.Item label="ESTiG" value="estig" />
-               <Picker.Item label="Bicycle" value="bicycle" />
+               <Picker.Item label="Bicycle" value="bicycle" /> */}
             </Picker>
          </View>
       </View>

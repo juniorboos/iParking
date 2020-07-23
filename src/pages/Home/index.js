@@ -41,9 +41,8 @@ export default function Home({ navigation }) {
          const parkingsList = [];
          const snapshot = await db.collection('Parkings').get();
          snapshot.forEach(doc => {
-            parkingsList.push(doc.data())
+            parkingsList.push({id: doc.id, ...doc.data()})
          })
-         console.log(parkingsList)
          setParkings(parkingsList)
       }
 
@@ -119,7 +118,7 @@ export default function Home({ navigation }) {
             )}
 
          </View>
-         <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation")}>
+         <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
             <Text style={styles.buttonText}>
                Make New Reservation
             </Text>

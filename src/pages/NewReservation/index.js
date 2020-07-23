@@ -15,9 +15,11 @@ import firebase, { db } from "../../services/firebase.js";
 import api from "../../services/api";
 // import MQTT from 'sq-react-native-mqtt';
 
-export default function NewReservation({ navigation }) {
+export default function NewReservation({ navigation, route }) {
+   const [parkings, setParkings] = useState([])
+   const [regions, setRegions] = useState([])
    const userId = firebase.auth().currentUser.uid;
-   const [parking, setParking] = useState('ipb')
+   const [parking, setParking] = useState()
    const [region, setRegion] = useState('estig')
    const [vehicle, setVehicle] = useState('bicycle')
    const [spot, setSpot] = useState();
@@ -34,6 +36,11 @@ export default function NewReservation({ navigation }) {
 
    const spotId = 0;
    const status = "entrar";
+
+   useEffect(() => {
+      setParkings(route.params)
+      console.log(route.params)
+   }, [])
    
    const createButtonAlert = (title, msg) => {
       Alert.alert(
@@ -87,11 +94,7 @@ export default function NewReservation({ navigation }) {
             status = "entrar"
             // return navigation.navigate('Home');
          })
-      }
-
-
-
-      
+      }      
    }
    
    async function sendNewReservation () {
@@ -100,15 +103,15 @@ export default function NewReservation({ navigation }) {
       console.log('Vehicle: ' + vehicle);
       console.log('Spot wanted: ' + spot);
       console.log('Max price: ' + maxPrice)
-      console.log('Date: ' + date);
-      console.log('Time from: ' + timeFrom);
-      console.log('Time to: ' + timeTo);
+      console.log('Date: ' + (date.toISOString().split('T')[0]).toString());
+      console.log('Time from: ' + (timeFrom.getHours() + ":" + timeFrom.getMinutes()).toString());
+      console.log('Time to: ' + (timeTo.getHours() + ":" + timeTo.getMinutes()).toString());
       console.log('Range: ' + range);
       console.log('Priority location: ' + priorityLocation);
       console.log('Priority price: ' + (100 - priorityLocation));
       console.log('User id: ' + userId);
 
-      db.collection('Users').doc(userId).collection('Reservations').add({
+      db.collection('Users').doc(userId).collection('Requests').add({
          parking: parking,
          region: region,
          vehicle: vehicle,
@@ -155,6 +158,20 @@ export default function NewReservation({ navigation }) {
       navigation.goBack();
    }
 
+   const onChangeParking = (itemValue, itemIndex) => {
+      setParking(itemValue)
+      console.log(itemValue)
+      
+      db.collection('Parkings').doc(itemValue).collection('Regions').get()
+         .then(response => {
+            const regionsList = [];
+            response.forEach(doc => {
+               regionsList.push({id: doc.id, ...doc.data()})
+            })
+            setRegions(regionsList)
+         })
+   }
+
    const onChangeDate = (event, selectedDate) => {
       const currentDate = selectedDate || date;
       setShow(Platform.OS === 'ios');
@@ -190,6 +207,15 @@ export default function NewReservation({ navigation }) {
       showMode('time');
       setDateMode('timeTo')
    };
+   const pickerItens = [{
+      name: "IPB"
+   },
+   {
+      name: "Market"
+   },
+   {
+      name: "Stadium"
+   }]
 
    return (
       <View style={styles.wrapper}>
@@ -207,16 +233,19 @@ export default function NewReservation({ navigation }) {
          <ScrollView vertical showsVerticalScrollIndicator={false}>
             <SelectInput
                label="Smart parking"
+               pickerItens={parkings}
                mode="dialog"
                selectedValue={parking}
-               onValueChange={(itemValue, itemIndex) => setParking(itemValue)}/>
+               onValueChange={onChangeParking}/>
             <SelectInput
                label="Region"
+               pickerItens={regions}
                mode="dialog"
                selectedValue={region}
                onValueChange={(itemValue, itemIndex) => setRegion(itemValue)}/>
             <SelectInput
                label="Vehicle"
+               pickerItens={pickerItens}
                mode="dialog"
                selectedValue={vehicle}
                onValueChange={(itemValue, itemIndex) => setVehicle(itemValue)}/>
