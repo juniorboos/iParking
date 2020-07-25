@@ -55,12 +55,12 @@ export default function NewReservation({ navigation, route }) {
   
    function handleSpot () {
       const data = {
-         initialDate: date,
-         endDate: date,
-         initialTime: timeFrom,
-         endTime: timeTo,
-         spotId: spotId,
-         driver: userId
+         initialDate: (date.toISOString().split('T')[0]).toString(),
+         endDate: (date.toISOString().split('T')[0]).toString(),
+         initialTime: (timeFrom.getHours() + ":" + timeFrom.getMinutes() + ":00").toString(),
+         endTime: (timeTo.getHours() + ":" + timeTo.getMinutes() + ":00").toString(),
+         spotId: spot,
+         driverId: userId
       }
 
       if (status == "entrar") {
@@ -96,6 +96,26 @@ export default function NewReservation({ navigation, route }) {
          })
       }      
    }
+
+   function KillAgent () {
+
+      const data = {
+         driverId: userId,
+         location: region,
+         price: maxPrice,
+         initialDate: (date.toISOString().split('T')[0]).toString(),
+         endDate: (date.toISOString().split('T')[0]).toString(),
+         initialTime: (timeFrom.getHours() + ":" + timeFrom.getMinutes() + ":00").toString(),
+         endTime: (timeTo.getHours() + ":" + timeTo.getMinutes() + ":00").toString()
+      }
+
+      api.post('kill', data).then(response => {
+         const responseBody = JSON.parse(response.data)
+         console.log(responseBody);
+      }).then(() => {
+         // return navigation.navigate('Home');
+      })
+   }
    
    async function sendNewReservation () {
       console.log('Parking: ' + parking);
@@ -124,29 +144,29 @@ export default function NewReservation({ navigation, route }) {
          locationWeight: priorityLocation,
          priceWeight: 100 - priorityLocation
       }).then(() => {
-         const data = {
-            driver: userId,
-            location: region,
-            price: maxPrice,
-            initialDate: (date.toISOString().split('T')[0]).toString(),
-            endDate: (date.toISOString().split('T')[0]).toString(),
-            initialTime: (timeFrom.getHours() + ":" + timeFrom.getMinutes()).toString(),
-            endTime: (timeTo.getHours() + ":" + timeTo.getMinutes()).toString()
-         }
+         // const data = {
+         //    driverId: userId,
+         //    location: region,
+         //    price: maxPrice,
+         //    initialDate: (date.toISOString().split('T')[0]).toString(),
+         //    endDate: (date.toISOString().split('T')[0]).toString(),
+         //    initialTime: (timeFrom.getHours() + ":" + timeFrom.getMinutes() + ":00").toString(),
+         //    endTime: (timeTo.getHours() + ":" + timeTo.getMinutes() + ":00").toString()
+         // }
 
-         api.post('request', data).then(response => {
-            const responseBody = JSON.parse(response.data)
-            console.log(responseBody);
-            if (responseBody.reservation == true) {
-               createButtonAlert("Success", `${responseBody.spot} - R$ ${responseBody.price}`);
-               spotId = responseBody.spot;
-            }else {
-               createButtonAlert("Failed", "Error in reservation.");
-            }
-         }).then(() => {
-            // return navigation.navigate('Home');
-         })
-         
+         // api.post('request', data).then(response => {
+         //    const responseBody = JSON.parse(response.data)
+         //    console.log(responseBody);
+         //    if (responseBody.reservation == true) {
+         //       createButtonAlert("Success", `${responseBody.spot} - R$ ${responseBody.price}`);
+         //       spotId = responseBody.spot;
+         //    }else {
+         //       createButtonAlert("Failed", "Error in reservation.");
+         //    }
+         // }).then(() => {
+         //    // return navigation.navigate('Home');
+         // })
+         createButtonAlert("Success", "You requested a spot!");         
       }).catch(erro => {
          setIsLoading(false);
          console.log(erro);
@@ -356,6 +376,15 @@ export default function NewReservation({ navigation, route }) {
             >
                Find a Spot
             </Button>
+            {/* <Button
+               backgroundColor="#AD00FF"
+               color="#FFFFFF"
+               fontSize={24}
+               justify="center"
+               onPress={() => KillAgent()}
+            >
+               Kill
+            </Button>
             <Button
                backgroundColor="#AD00FF"
                color="#FFFFFF"
@@ -364,7 +393,7 @@ export default function NewReservation({ navigation, route }) {
                onPress={() => handleSpot()}
             >
                Enter / Leave
-            </Button>
+            </Button> */}
          </HideWithKeyboard>
       </View>
    );
