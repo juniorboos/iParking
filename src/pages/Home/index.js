@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Feather as Icon } from '@expo/vector-icons';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
@@ -74,12 +74,13 @@ export default function Home({ navigation }) {
       <>
          
          <View style={styles.mapContainer}>
-            {initialPosition[0] !== 0 && (
+            {initialPosition[0] !== 0 ? (
                <MapView
                   // ref = {(ref)=> this.mapView = ref}
                   style={styles.map}
                   minZoomLevel={13}
                   loadingEnabled={true}
+                  showsMyLocationButton={false}
                   showsUserLocation={true}
                   initialRegion={{
                      latitude: initialPosition[0],
@@ -115,7 +116,7 @@ export default function Home({ navigation }) {
                      )
                   })}
                </MapView>
-            )}
+            ): <ActivityIndicator style={styles.map} size="small" />}
 
          </View>
          <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
