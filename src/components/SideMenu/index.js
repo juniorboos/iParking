@@ -4,7 +4,8 @@ import { Feather, MaterialIcons, MaterialCommunityIcons, AntDesign } from '@expo
 import { CommonActions } from "@react-navigation/native";
 import {
    DrawerContentScrollView,
-   DrawerItem
+   DrawerItem,
+   DrawerItemList
 } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
 import firebase from '../../services/firebase';
@@ -19,6 +20,7 @@ export function SideMenu(props) {
 
    function handleNavigate ( value ) {
       setSelectedPage(value);
+      console.log(props.state)
       props.navigation.navigate(value)
    }
 
@@ -60,6 +62,7 @@ export function SideMenu(props) {
                   <Text style={styles.userEmail}>{user.email}</Text>
                </View>
                <View>
+                  
                   <TouchableOpacity style={selectedPage == 'Home' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('Home')}>
                      <View style={styles.buttonIcon}>
                         <Text>

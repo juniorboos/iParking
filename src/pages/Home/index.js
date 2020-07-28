@@ -8,6 +8,7 @@ import { RectButton } from 'react-native-gesture-handler';
 import { db } from '../../services/firebase';
 
 import CustomCallout from '../../components/CustomCallout'
+import LoadingScreen from '../../components/LoadingScreen'
 
 export default function Home({ navigation }) {
    const [initialPosition, setInitialPosition] = useState([0, 0])
@@ -71,53 +72,53 @@ export default function Home({ navigation }) {
 
 
    return (
-      <>
-         
+      <> 
+      {initialPosition[0] == 0 ? (
+         <LoadingScreen />
+      ):(
+         <>
          <View style={styles.mapContainer}>
-            {initialPosition[0] !== 0 ? (
-               <MapView
-                  // ref = {(ref)=> this.mapView = ref}
-                  style={styles.map}
-                  minZoomLevel={13}
-                  loadingEnabled={true}
-                  showsMyLocationButton={false}
-                  showsUserLocation={true}
-                  initialRegion={{
+            <MapView
+               // ref = {(ref)=> this.mapView = ref}
+               style={styles.map}
+               minZoomLevel={13}
+               loadingEnabled={true}
+               showsMyLocationButton={false}
+               showsUserLocation={true}
+               initialRegion={{
+                  latitude: initialPosition[0],
+                  longitude: initialPosition[1],
+                  latitudeDelta: 0.014,
+                  longitudeDelta: 0.014,
+               }}>
+               {/* <Marker
+                  // pinColor="#9D11DF"
+                  coordinate={{
                      latitude: initialPosition[0],
                      longitude: initialPosition[1],
-                     latitudeDelta: 0.014,
-                     longitudeDelta: 0.014,
-                  }}>
-                  {/* <Marker
-                     // pinColor="#9D11DF"
-                     coordinate={{
-                        latitude: initialPosition[0],
-                        longitude: initialPosition[1],
-                  }}>
-                     <View style={styles.radius}>
-                        <View style={styles.marker} />
-                     </View>
-                  </Marker> */}
-                  { parkings.map((parking, index) => {
-                     return (
-                        <Marker
-                           // onPress={() => changeRegion(parking.coordinates)}
-                           // onPress={() => loadSpots()}
-                           key={index}
-                           pinColor="#9D11DF"
-                           coordinate={{
-                              latitude: parking.coordinates[0],
-                              longitude: parking.coordinates[1],
-                        }} >
-                           <Callout>
-                              <CustomCallout title={parking.name}/>
-                           </Callout>
-                        </Marker>
-                     )
-                  })}
-               </MapView>
-            ): <ActivityIndicator style={styles.map} size="small" />}
-
+               }}>
+                  <View style={styles.radius}>
+                     <View style={styles.marker} />
+                  </View>
+               </Marker> */}
+               { parkings.map((parking, index) => {
+                  return (
+                     <Marker
+                        // onPress={() => changeRegion(parking.coordinates)}
+                        // onPress={() => loadSpots()}
+                        key={index}
+                        pinColor="#9D11DF"
+                        coordinate={{
+                           latitude: parking.coordinates[0],
+                           longitude: parking.coordinates[1],
+                     }} >
+                        <Callout>
+                           <CustomCallout title={parking.name}/>
+                        </Callout>
+                     </Marker>
+                  )
+               })}
+            </MapView>
          </View>
          <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
             <Text style={styles.buttonText}>
@@ -181,7 +182,9 @@ export default function Home({ navigation }) {
                color="#AD00FF" 
                size={24}
                style={styles.FloatingButtonStyle} />
-        </TouchableOpacity>
+         </TouchableOpacity>
+         </>
+      )}
       </>
    );
 }

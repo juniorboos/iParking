@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Feather } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { View, StyleSheet, Text, TextInput, ScrollView, Alert, TouchableOpacity, Slider } from 'react-native';
+import { View, StyleSheet, Text, TextInput, ScrollView, Alert, TouchableOpacity, Slider, ActivityIndicator } from 'react-native';
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
 import AppBar from "../../components/AppBar";
 import Input from "../../components/Input";
@@ -11,6 +11,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 // import { Picker } from '@react-native-community/picker';
 import { Picker } from 'react-native'
 import SelectInput from '../../components/SelectInput';
+import LoadingScreen from '../../components/LoadingScreen';
 import firebase, { db } from "../../services/firebase.js";
 import api from "../../services/api";
 // import MQTT from 'sq-react-native-mqtt';
@@ -29,6 +30,7 @@ export default function NewReservation({ navigation, route }) {
    const [timeTo, setTimeTo] = useState(new Date());
    const [range, setRange] = useState(500);
    const [priorityLocation, setPriorityLocation] = useState(50);
+   const [loading, setLoading] = useState(false);
    
    const [mode, setMode] = useState('date');
    const [show, setShow] = useState(false);
@@ -118,6 +120,7 @@ export default function NewReservation({ navigation, route }) {
    }
    
    async function sendNewReservation () {
+      setLoading(true)
       console.log('Parking: ' + parking);
       console.log('Region: ' + region);
       console.log('Vehicle: ' + vehicle);
@@ -166,6 +169,7 @@ export default function NewReservation({ navigation, route }) {
          // }).then(() => {
          //    // return navigation.navigate('Home');
          // })
+         setLoading(false)
          createButtonAlert("Success", "You requested a spot!");         
       }).catch(erro => {
          setIsLoading(false);
@@ -238,7 +242,12 @@ export default function NewReservation({ navigation, route }) {
    }]
 
    return (
+      <>
+      {loading == true ? (
+         <LoadingScreen />
+      ):(
       <View style={styles.wrapper}>
+         
          <AppBar
             renderLeft={
                <TouchableOpacity onPress={handleNavigationBack}>
@@ -396,6 +405,8 @@ export default function NewReservation({ navigation, route }) {
             </Button> */}
          </HideWithKeyboard>
       </View>
+      )}
+      </>
    );
 }
 
@@ -503,7 +514,7 @@ const styles = StyleSheet.create({
    },
    footer: {
       width: "100%",
-      height: 150,
+      height: 75,
    },
    header: {
       fontSize: 24,

@@ -24,8 +24,10 @@ export default function Profile({ navigation }) {
       id: 'Car'
    }]
    const [modalState, setModalState] = useState(false)
+   const [editMode, setEditMode] = useState(false)
    const [userData, setUserData] = useState({});
    const [vehicles, setVehicles] = useState([])
+   const [vehicleId, setVehicleId] = useState()
    const [vehicleType, setVehicleType] = useState('Bicycle')
    const [vehicleModel, setVehicleModel] = useState('')
    const [vehiclePlate, setVehiclePlate] = useState('')
@@ -36,7 +38,19 @@ export default function Profile({ navigation }) {
    },[])
 
    function displayModal (show) {
+      setVehicleType('Bicycle')
+      setVehicleModel()
+      setVehiclePlate()
+      setEditMode(false)
       setModalState(show)
+   }
+   function displayModalEdit (vehicle) {
+      setVehicleId(vehicle.id)
+      setVehicleType(vehicle.type)
+      setVehicleModel(vehicle.model)
+      setVehiclePlate(vehicle.plate)
+      setEditMode(true)
+      setModalState(true)
    }
 
    async function loadUser() {
@@ -68,6 +82,19 @@ export default function Profile({ navigation }) {
       })
    }
 
+   async function editVehicle (vehicleId) {
+      await db.collection('Users').doc(userId).collection('Vehicles').doc(vehicleId).set({
+         type: vehicleType,
+         model: vehicleModel,
+         plate: vehiclePlate
+      }).then(() => {
+         console.log("Vehicle added!")
+         loadVehicles()
+         displayModal(false)
+         Alert.alert("Vehicle added!");
+      })
+   }
+
    return (
       <View style={styles.container}>
          <LinearGradient
@@ -84,16 +111,23 @@ export default function Profile({ navigation }) {
                      mode="dropdown"
                      selectedValue={vehicleType}
                      onValueChange={(itemValue, itemIndex) => setVehicleType(itemValue)}/>
-                  <Input label="Model" placeholder="Ford Fiesta" onChangeText={setVehicleModel} />
+                  <Input defaultValue={vehicleModel} label="Model" placeholder="Ford Fiesta" onChangeText={setVehicleModel} />
                   {vehicleType != 'Bicycle' ? 
-                     <Input label="License plate" placeholder="MC-11-22" onChangeText={setVehiclePlate} />
+                     <Input defaultValue={vehiclePlate} label="License plate" placeholder="MC-11-22" onChangeText={setVehiclePlate} />
                   : null }
                   <TouchableOpacity 
-                     style={styles.button} 
-                     onPress={addVehicle}>
-                     <Text style={styles.buttonText}>
-                        Add vehicle
-                     </Text>
+                     style={styles.button}
+                     onPress={editMode == false ? addVehicle : () => editVehicle(vehicleId)}>
+                     {editMode == false ? (
+                        <Text style={styles.buttonText}>
+                           Add vehicle
+                        </Text>
+                     ):(
+                        <Text style={styles.buttonText}>
+                           Edit vehicle
+                        </Text>
+                     )}
+                     
                   </TouchableOpacity>
 
                </View>
@@ -154,9 +188,9 @@ export default function Profile({ navigation }) {
                                  ? <FontAwesome name="motorcycle" size={24} color="black" style={styles.infoIcon} />
                                  : <FontAwesome name="car" size={24} color="black" style={styles.infoIcon} />}
                                  
-                                 <Text style={styles.fieldLabel}>{vehicle.model}</Text>
+                        <Text style={styles.fieldLabel}>{vehicle.model} {vehicle.plate}</Text>
                               </View>
-                              <TouchableOpacity style={styles.vehicleEditIcons} onPress={() => console.log()}>
+                              <TouchableOpacity style={styles.vehicleEditIcons} onPress={() => displayModalEdit(vehicle)}>
                                  <Feather name="edit" color="#000" size={24} />
                               </TouchableOpacity>
                            </View>
