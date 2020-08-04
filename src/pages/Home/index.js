@@ -33,6 +33,7 @@ export default function Home({ navigation }) {
                latitude,
                longitude
             ])
+            
          } catch (error) {
             loadPosition();
          }
@@ -45,10 +46,11 @@ export default function Home({ navigation }) {
             parkingsList.push({id: doc.id, ...doc.data()})
          })
          setParkings(parkingsList)
+         console.log("Parkings: ")
+         console.log(parkingsList)
       }
-
-      loadPosition();
       loadParkings();
+      loadPosition();
    }, [])
 
    // function changeRegion (coordinates) {

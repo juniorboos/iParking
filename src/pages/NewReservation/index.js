@@ -19,6 +19,7 @@ import api from "../../services/api";
 export default function NewReservation({ navigation, route }) {
    const [parkings, setParkings] = useState([])
    const [regions, setRegions] = useState([])
+   const [vehicles, setVehicles] = useState([])
    const userId = firebase.auth().currentUser.uid;
    const [parking, setParking] = useState()
    const [region, setRegion] = useState('estig')
@@ -40,7 +41,20 @@ export default function NewReservation({ navigation, route }) {
    const status = "entrar";
 
    useEffect(() => {
+      async function loadVehicles () {
+         const vehiclesList = [];
+         const snapshot = await db.collection('Users').doc(userId).collection('Vehicles').get();
+         snapshot.forEach(doc => {
+            vehiclesList.push({id: doc.id, name: doc.data().model, ...doc.data()})
+         })
+         setVehicles(vehiclesList)
+         console.log("Vehicles: ")
+         console.log(vehiclesList)
+      }
+
+
       setParkings(route.params)
+      loadVehicles()
       console.log(route.params)
    }, [])
    
@@ -137,7 +151,7 @@ export default function NewReservation({ navigation, route }) {
       db.collection('Users').doc(userId).collection('Requests').add({
          parking: parking,
          region: region,
-         vehicle: vehicle,
+         vehicleId: vehicle,
          spotWanted: spot,
          maxPrice: maxPrice,
          date: (date.toISOString().split('T')[0]).toString(),
@@ -274,7 +288,7 @@ export default function NewReservation({ navigation, route }) {
                onValueChange={(itemValue, itemIndex) => setRegion(itemValue)}/>
             <SelectInput
                label="Vehicle"
-               pickerItens={pickerItens}
+               pickerItens={vehicles}
                mode="dialog"
                selectedValue={vehicle}
                onValueChange={(itemValue, itemIndex) => setVehicle(itemValue)}/>
