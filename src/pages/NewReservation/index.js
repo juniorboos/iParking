@@ -42,12 +42,14 @@ export default function NewReservation({ navigation, route }) {
 
    useEffect(() => {
       console.log("Escutando...")
-      firebase.database()
-         .ref('/Users/'+ userId)
-         .once('value', snapshot => {
-            createButtonAlert("Success", snapshot.val().spot);
+      const userRef = firebase.database().ref('Users/' + userId)
+      userRef.on('value', snapshot => {
+         console.log("Encontrou")
+         if(snapshot.val() != null) {
+            createButtonAlert("Success", snapshot.val().reservation);
             console.log(snapshot.val());
-         });
+         }
+      });
    },[userId])
    
 
