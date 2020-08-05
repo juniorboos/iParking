@@ -41,6 +41,17 @@ export default function NewReservation({ navigation, route }) {
    const status = "entrar";
 
    useEffect(() => {
+      console.log("Escutando...")
+      firebase.database()
+         .ref('/Users/'+ userId)
+         .once('value', snapshot => {
+            createButtonAlert("Success", snapshot.val().spot);
+            console.log(snapshot.val());
+         });
+   },[userId])
+   
+
+   useEffect(() => {
       async function loadVehicles () {
          const vehiclesList = [];
          const snapshot = await db.collection('Users').doc(userId).collection('Vehicles').get();
@@ -48,15 +59,29 @@ export default function NewReservation({ navigation, route }) {
             vehiclesList.push({id: doc.id, name: doc.data().model, ...doc.data()})
          })
          setVehicles(vehiclesList)
-         console.log("Vehicles: ")
-         console.log(vehiclesList)
+         // console.log("Vehicles: ")
+         // console.log(vehiclesList)
       }
-
-
       setParkings(route.params)
       loadVehicles()
-      console.log(route.params)
+      // console.log(route.params)
    }, [])
+
+   // useEffect(() => {
+   //    console.log("Escutando...")
+   //    const onValueChange = firebase.database()
+   //      .ref(`/Users/${userId}`)
+   //      .on('value', snapshot => {
+   //          createButtonAlert("Success", snapshot.val().spot);
+   //          console.log('User data: ', snapshot.val().spot);
+   //      });
+  
+   //    // Stop listening for updates when no longer required
+   //    // return () =>
+   //    //   database()
+   //    //     .ref(`/users/${userId}`)
+   //    //     .off('value', onValueChange);
+   //  }, [userId]);
    
    const createButtonAlert = (title, msg) => {
       Alert.alert(
@@ -198,7 +223,7 @@ export default function NewReservation({ navigation, route }) {
 
    const onChangeParking = (itemValue, itemIndex) => {
       setParking(itemValue)
-      console.log(itemValue)
+      // console.log(itemValue)
       
       db.collection('Parkings').doc(itemValue).collection('Regions').get()
          .then(response => {
