@@ -36,6 +36,7 @@ export default function NewReservation({ navigation, route }) {
    const [mode, setMode] = useState('date');
    const [show, setShow] = useState(false);
    const [dateMode, setDateMode] = useState();
+   const [readData, setReadData] = useState(false)
 
    const spotId = 0;
    const status = "entrar";
@@ -224,12 +225,13 @@ export default function NewReservation({ navigation, route }) {
          const userRef = firebase.database().ref('Users/' + userId)
          userRef.on('value', snapshot => {
             console.log("Encontrou")
-            if(snapshot.val() != null) {
+            if(snapshot.val() != null && readData == false) {
+               setReadData(true)
                console.log(snapshot.val());
                if(snapshot.val().reservation == "true"){
                   Alert.alert(
                      "Success",
-                     "You won the spot: " + snapshot.val().spot + " at the price of €" + snapshot.val().price,
+                     "You won the spot: " + snapshot.val().spot.toString() + " at the price of €" + snapshot.val().price,
                      [
                         { 
                            text: "Decline",
