@@ -14,6 +14,7 @@ import SelectInput from '../../components/SelectInput';
 import LoadingScreen from '../../components/LoadingScreen';
 import firebase, { db } from "../../services/firebase.js";
 import api from "../../services/api";
+import { database } from 'firebase';
 // import MQTT from 'sq-react-native-mqtt';
 
 export default function NewReservation({ navigation, route }) {
@@ -32,26 +33,12 @@ export default function NewReservation({ navigation, route }) {
    const [range, setRange] = useState(500);
    const [priorityLocation, setPriorityLocation] = useState(50);
    const [loading, setLoading] = useState(false);
-   
    const [mode, setMode] = useState('date');
    const [show, setShow] = useState(false);
    const [dateMode, setDateMode] = useState();
 
    const spotId = 0;
    const status = "entrar";
-
-   useEffect(() => {
-      console.log("Escutando...")
-      const userRef = firebase.database().ref('Users/' + userId)
-      userRef.on('value', snapshot => {
-         console.log("Encontrou")
-         if(snapshot.val() != null) {
-            createButtonAlert("Success", snapshot.val().reservation);
-            console.log(snapshot.val());
-         }
-      });
-   },[userId])
-   
 
    useEffect(() => {
       async function loadVehicles () {
@@ -175,6 +162,26 @@ export default function NewReservation({ navigation, route }) {
       console.log('Priority price: ' + (100 - priorityLocation));
       console.log('User id: ' + userId);
 
+      async function confirmSpot (decision, requestId, responseData) {
+         if (decision == "accept"){
+            console.log(requestId)
+            db.collection('Users').doc(userId).collection('Requests').doc(requestId).update({
+               spotWon: responseData.spot,
+               priceWon: responseData.price,
+               status: "Accepted"
+            })
+         } else {
+            db.collection('Users').doc(userId).collection('Requests').doc(requestId).update({
+               spotWon: responseData.spot,
+               priceWon: responseData.price,
+               status: "Declined"
+            })
+         }
+         await database().ref('Users/' + userId).remove()
+         setLoading(false) 
+         navigation.navigate('Home')
+      }
+
       db.collection('Users').doc(userId).collection('Requests').add({
          parking: parking,
          region: region,
@@ -187,7 +194,9 @@ export default function NewReservation({ navigation, route }) {
          distanceRange: range,
          locationWeight: priorityLocation,
          priceWeight: 100 - priorityLocation
-      }).then(() => {
+      }).then((response) => {
+         console.log("added")
+         console.log(response.id)
          // const data = {
          //    driverId: userId,
          //    location: region,
@@ -210,8 +219,45 @@ export default function NewReservation({ navigation, route }) {
          // }).then(() => {
          //    // return navigation.navigate('Home');
          // })
-         setLoading(false)
-         createButtonAlert("Success", "You requested a spot!");         
+
+         console.log("Escutando... ")
+         const userRef = firebase.database().ref('Users/' + userId)
+         userRef.on('value', snapshot => {
+            console.log("Encontrou")
+            if(snapshot.val() != null) {
+               console.log(snapshot.val());
+               if(snapshot.val().reservation == "true"){
+                  Alert.alert(
+                     "Success",
+                     "You won the spot: " + snapshot.val().spot + " at the price of €" + snapshot.val().price,
+                     [
+                        { 
+                           text: "Decline",
+                           onPress: () => confirmSpot("decline", response.id, snapshot.val()) 
+                        },
+                        {
+                           text: "Accept", 
+                           onPress: () => confirmSpot("accept", response.id, snapshot.val())
+                        }
+                     ],
+                     { cancelable: false }
+                  );
+               } else {
+                  Alert.alert(
+                     "Failed",
+                     "No spot available",
+                     [
+                        {
+                           text: "OK", 
+                           onPress: () => console.log("OK Pressed")
+                        }
+                     ],
+                     { cancelable: false }
+                  );
+               }
+               
+            }
+         });      
       }).catch(erro => {
          setIsLoading(false);
          console.log(erro);
