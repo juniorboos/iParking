@@ -15,7 +15,6 @@ import LoadingScreen from '../../components/LoadingScreen';
 import firebase, { db } from "../../services/firebase.js";
 import api from "../../services/api";
 import { database } from 'firebase';
-// import MQTT from 'sq-react-native-mqtt';
 
 export default function NewReservation({ navigation, route }) {
    const [parkings, setParkings] = useState([])
@@ -150,6 +149,16 @@ export default function NewReservation({ navigation, route }) {
    
    async function sendNewReservation () {
       setLoading(true)
+      const dateAll = (date.toISOString().split('T')[0]).toString()
+      const dateParts = dateAll.split('-')
+      const timeAllFrom = (timeFrom.getHours() + ":" + timeFrom.getMinutes()).toString()
+      const timePartsFrom = timeAllFrom.split(':')
+      const timeAllTo = (timeTo.getHours() + ":" + timeTo.getMinutes()).toString()
+      const timePartsTo = timeAllTo.split(':')
+      const timestampFrom = new Date(dateParts[0], parseInt(dateParts[1], 10) - 1, dateParts[2], timePartsFrom[0], timePartsFrom[1])
+      const timestampTo = new Date(dateParts[0], parseInt(dateParts[1], 10) - 1, dateParts[2], timePartsTo[0], timePartsTo[1])
+      console.log(timestampFrom)
+      console.log(timestampTo)
       console.log('Parking: ' + parking);
       console.log('Region: ' + region);
       console.log('Vehicle: ' + vehicle);
@@ -170,6 +179,14 @@ export default function NewReservation({ navigation, route }) {
                spotWon: responseData.spot,
                priceWon: responseData.price,
                status: "Accepted"
+            }).then(() => {
+               firebase.database().ref('Users/' + userId + '/Reservations/').push().set({
+                  parking: parking,
+                  spot: responseData.spot,
+                  price: responseData.price,
+                  dateFrom: timestampFrom,
+                  dateTo: timestampTo
+               })
             })
          } else {
             db.collection('Users').doc(userId).collection('Requests').doc(requestId).update({
@@ -178,7 +195,7 @@ export default function NewReservation({ navigation, route }) {
                status: "Declined"
             })
          }
-         await database().ref('Users/' + userId).remove()
+         await database().ref('Users/' + userId + '/Request/').remove()
          setLoading(false) 
          navigation.navigate('Home')
       }
@@ -221,8 +238,8 @@ export default function NewReservation({ navigation, route }) {
          //    // return navigation.navigate('Home');
          // })
 
-         console.log("Escutando... ")
-         const userRef = firebase.database().ref('Users/' + userId)
+         console.log("Aguardando resposta... ")
+         const userRef = firebase.database().ref('Users/' + userId).child('Request')
          userRef.on('value', snapshot => {
             console.log("Encontrou")
             if(snapshot.val() != null && readData == false) {
