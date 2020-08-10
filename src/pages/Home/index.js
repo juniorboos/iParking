@@ -87,6 +87,7 @@ export default function Home({ navigation }) {
                loadingEnabled={true}
                showsMyLocationButton={false}
                showsUserLocation={true}
+               toolbarEnabled={true}
                initialRegion={{
                   latitude: initialPosition[0],
                   longitude: initialPosition[1],

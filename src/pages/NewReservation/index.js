@@ -432,7 +432,7 @@ export default function NewReservation({ navigation, route }) {
                   </TouchableOpacity>
                </View>
                <View style={styles.smallInputContainer}>
-                  <Text style={styles.label}>From</Text>
+                  <Text style={styles.label}>To</Text>
                   <TouchableOpacity style={styles.pickerTime} onPress={showTimeTopicker}>
                      <Text style={styles.dateText}>
                         {timeTo.getHours() + ":" + timeTo.getMinutes()}
