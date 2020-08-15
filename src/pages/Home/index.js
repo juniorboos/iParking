@@ -9,11 +9,12 @@ import { db } from '../../services/firebase';
 
 import CustomCallout from '../../components/CustomCallout'
 import LoadingScreen from '../../components/LoadingScreen'
+import ReservationCard from '../../components/ReservationCard'
 
 export default function Home({ navigation }) {
    const [initialPosition, setInitialPosition] = useState([0, 0])
    const [parkings, setParkings] = useState([]);
-   const [state, setState] = useState();
+   const [bottom, setBottom] = useState(1);
 
    useEffect(() => {
       async function loadPosition() {
@@ -72,6 +73,12 @@ export default function Home({ navigation }) {
    //    })
    // }
 
+   function markerHack () {
+      if (bottom == 1) {
+         setBottom(0)
+      }
+   }
+
 
    return (
       <> 
@@ -82,7 +89,7 @@ export default function Home({ navigation }) {
          <View style={styles.mapContainer}>
             <MapView
                // ref = {(ref)=> this.mapView = ref}
-               style={styles.map}
+               style={[styles.map, { bottom: bottom }]}
                minZoomLevel={13}
                loadingEnabled={true}
                showsMyLocationButton={false}
@@ -111,6 +118,7 @@ export default function Home({ navigation }) {
                         // onPress={() => loadSpots()}
                         key={index}
                         pinColor="#9D11DF"
+                        onPress={markerHack}
                         coordinate={{
                            latitude: parking.coordinates[0],
                            longitude: parking.coordinates[1],
@@ -123,6 +131,7 @@ export default function Home({ navigation }) {
                })}
             </MapView>
          </View>
+         <ReservationCard />
          <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
             <Text style={styles.buttonText}>
                Make New Reservation

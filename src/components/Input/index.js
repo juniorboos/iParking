@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
 	label: {
 		color: "#6C6C80",
 		fontSize: 14,
-		marginTop: 14,
+		// marginTop: 14,
 		marginBottom: 8,
 	},
 	input: {
@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
 		borderRadius: 20,
 		// marginBottom: 8,
 		paddingHorizontal: 20,
+		marginBottom: 16,
 		fontSize: 16,
 	},
 });
