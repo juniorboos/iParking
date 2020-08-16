@@ -11,6 +11,7 @@ import Constants from 'expo-constants';
 import firebase from '../../services/firebase';
 
 export function SideMenu(props) {
+
    const [selectedPage, setSelectedPage] = useState('Home');
 
    const user = {
@@ -18,9 +19,9 @@ export function SideMenu(props) {
 		name: firebase.auth().currentUser.displayName,
 	};
 
+
    function handleNavigate ( value ) {
       setSelectedPage(value);
-      console.log(props.state)
       props.navigation.navigate(value)
    }
 
@@ -62,7 +63,18 @@ export function SideMenu(props) {
                   <Text style={styles.userEmail}>{user.email}</Text>
                </View>
                <View>
-                  
+                  {/* <DrawerItem
+                     label="Teste" 
+                     icon={() => <MaterialIcons name="home" size={24}/>}
+                     onPress={() => handleNavigate('Home')}
+                  /> */}
+                  <DrawerItemList 
+                     activeTintColor='#AD00FF' 
+                     activeBackgroundColor='#EBEBEB'
+                     labelStyle={styles.presetTitle}
+                     // itemStyle={styles.drawerItem}
+                     
+                     {...props} />
                   <TouchableOpacity style={selectedPage == 'Home' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('Home')}>
                      <View style={styles.buttonIcon}>
                         <Text>
@@ -150,6 +162,12 @@ const styles = StyleSheet.create({
       backgroundColor: '#EBEBEB',
       paddingTop: Constants.statusBarHeight,
    },
+   drawerItem: {
+      backgroundColor: '#000',
+      borderColor: '#000',
+      borderWidth: 1,
+      width: '100%'
+   },
 
    userInfo: {
       paddingBottom: 16,
@@ -219,7 +237,7 @@ const styles = StyleSheet.create({
       fontStyle: 'normal',
       fontWeight: '600',
       justifyContent: 'center',
-      color: '#555555',
+      // color: '#555555',
       fontSize: 18,
    },
 

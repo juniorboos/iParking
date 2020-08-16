@@ -130,8 +130,8 @@ export default function Home({ navigation }) {
                   )
                })}
             </MapView>
+            <ReservationCard style={styles.reservationCard} />
          </View>
-         <ReservationCard />
          <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
             <Text style={styles.buttonText}>
                Make New Reservation
@@ -241,23 +241,11 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       right: 30,
       top: 30 + Constants.statusBarHeight,
+      
     },
-   floatingMenu: {
-      width: '100%',
-      justifyContent: 'center', 
-      alignItems: 'center',
-      alignSelf: 'center',
-      position: 'absolute',
-      top: 110 + Constants.statusBarHeight
-   },
    container: {
       maxHeight: '20%'
    },
-   buttonMenu: {
-      height: 0,
-      color: 'white',
-   },
-
    preset: {
       marginBottom: 4,
       backgroundColor: "#FFF",
@@ -321,11 +309,13 @@ const styles = StyleSheet.create({
    },
 
    mapContainer: {
-      flex: 1,
+      // flex: 1,
       width: '100%',
-      borderRadius: 10,
-      // overflow: 'hidden',
-      justifyContent: 'flex-start'
+      height: '75%',
+      // borderRadius: 10,
+      // borderWidth: 10,
+      justifyContent: 'flex-start',
+      position: 'relative',
    },
 
    map: {
