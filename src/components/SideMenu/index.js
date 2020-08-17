@@ -75,7 +75,7 @@ export function SideMenu(props) {
                      // itemStyle={styles.drawerItem}
                      
                      {...props} />
-                  <TouchableOpacity style={selectedPage == 'Home' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('Home')}>
+                  {/* <TouchableOpacity style={selectedPage == 'Home' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('Home')}>
                      <View style={styles.buttonIcon}>
                         <Text>
                            <MaterialIcons name="home" size={24} style={selectedPage == 'Home' ? styles.presetIconSelected : styles.presetIcon}/>
@@ -122,12 +122,12 @@ export function SideMenu(props) {
                            Profile
                         </Text>
                      </View>
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                </View>
             </View>
          </DrawerContentScrollView>
          <View style={styles.bottomDrawerSection}>
-            <TouchableOpacity style={selectedPage == 'Settings' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('Settings')}>
+            {/* <TouchableOpacity style={selectedPage == 'Settings' ? styles.presetSelected : styles.preset} onPress={() => handleNavigate('Settings')}>
                <View style={styles.buttonIcon}>
                   <Text>
                      <MaterialIcons name="settings" size={24} style={selectedPage == 'Settings' ? styles.presetIconSelected : styles.presetIcon} />
@@ -138,7 +138,7 @@ export function SideMenu(props) {
                      Settings
                   </Text>
                </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity style={styles.preset} onPress={() => createTwoButtonAlert()}>
                <View style={styles.buttonIcon}>
                   <Text>
