@@ -5,32 +5,24 @@ import { MaterialIcons as Icon } from '@expo/vector-icons';
 export default function ReservationCard() {
 	return (
 		<View style={styles.container}>
-         {/* Above */}
          <View style={styles.containerAbove}>
-            {/* Left */}
             <View style={styles.infoContainer}>
-               {/* Above */}
                <View style={styles.nameInfo}>
                   <Text style={styles.nameText}>Polytechnic Institute of Bragança</Text>
                </View>
-               {/* Under */}
                <View style={styles.dateContainer}>
-                  {/* Left */}
                   <View>
                      <Text>3 Fev, 2020</Text>
                   </View>
-                  {/* Right */}
                   <View>
                      <Text>10:00 - 15:00</Text>
                   </View>
                </View>
             </View>
-            {/* Right */}
             <View style={styles.iconContainer}>
                <Icon name="location-on" color="#000" size={32} />
             </View>
          </View>	
-         {/* Button */}
          <View style={styles.buttonContainer}>
             <Text style={styles.buttonText}>Enter spot</Text>
          </View>
