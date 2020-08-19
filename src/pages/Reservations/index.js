@@ -6,38 +6,23 @@ import firebase, { db } from "../../services/firebase.js";
 import Accordion from 'react-native-collapsible/Accordion';
 
 export default function Reservations({ navigation }) {
-   const SECTIONS = [
-      {
-        parking: 'Polytechnic Institute of Bragança',
-        region: 'ESTiG',
-        vehicle: 'Bicycle',
-        spot: 2,
-        timeFrom: '10:00',
-        timeTo: '12:00',
-        date: '3 Fev, 2020',
-        price: '€ 4,25'
-      },
-      {
-        parking: 'Polytechnic Institute of Bragança',
-        region: 'ESTiG',
-        vehicle: 'Bicycle',
-        spot: 2,
-        timeFrom: '10:00',
-        timeTo: '12:00',
-        date: '3 Fev, 2020',
-        price: '€ 4,25'
-      },
-      {
-        parking: 'Polytechnic Institute of Bragança',
-        region: 'ESTiG',
-        vehicle: 'Bicycle',
-        spot: 2,
-        timeFrom: '10:00',
-        timeTo: '12:00',
-        date: '3 Fev, 2020',
-        price: '€ 4,25'
-      },
-    ];
+   const [reservations, setReservations] = useState([])
+   const userId = firebase.auth().currentUser.uid;
+
+   useEffect(() => {
+      async function loadReservations () {
+         const reservationsList = [];
+         const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Accepted').get();
+         snapshot.forEach(doc => {
+            reservationsList.push({id: doc.id, ...doc.data()})
+         })
+         setReservations(reservationsList)
+         console.log("Reservations: ")
+         console.log(reservationsList)
+      }
+
+      loadReservations();
+   }, [])
     
    
    const [activeSections, setActiveSections] = useState([])
@@ -52,23 +37,23 @@ export default function Reservations({ navigation }) {
    
    const _renderHeader = section => {
       return (
-        <View style={{backgroundColor: '#FFF', marginBottom: 8}}>
+        <View style={{backgroundColor: '#FFF', marginTop: 8,}}>
           <View style={styles.containerAbove}>
             <View style={styles.infoContainer}>
                <View style={styles.nameInfo}>
-                  <Text style={styles.nameText}>{section.parking}</Text>
+                  <Text style={styles.nameText}>{section.parkingName}</Text>
                </View>
                <View style={styles.dateContainer}>
                   <View>
-                     <Text>3 Fev, 2020</Text>
+                     <Text>{section.date}</Text>
                   </View>
                   <View>
-                     <Text>10:00 - 15:00</Text>
+                     <Text>{section.timeFrom} - {section.timeTo}</Text>
                   </View>
                </View>
             </View>
             <View style={styles.iconContainer}>
-               <Feather name="location-on" color="#000" size={32} />
+               <MaterialIcons name="location-on" color="#000" size={32} />
             </View>
          </View>
         </View>
@@ -78,10 +63,9 @@ export default function Reservations({ navigation }) {
    const _renderContent = section => {
       return (
         <View style={styles.content}>
-          <Text>{section.parking}</Text>
-          <Text>{section.region}</Text>
-          <Text>{section.vehicle}</Text>
-          <Text>{section.spot}</Text>
+          <Text style={styles.detailsText}>{section.region} - Spot {section.spotWon}</Text>
+          <Text style={styles.detailsText}>{section.vehicleModel}</Text>
+          <Text style={styles.detailsText}>€ {section.priceWon}</Text>
         </View>
       );
     };
@@ -109,7 +93,7 @@ export default function Reservations({ navigation }) {
             </View>
          <View>
             <Accordion
-               sections={SECTIONS}
+               sections={reservations}
                activeSections={activeSections}
                renderSectionTitle={_renderSectionTitle}
                renderHeader={_renderHeader}
@@ -135,7 +119,7 @@ const styles = StyleSheet.create({
       paddingTop: 24 + Constants.statusBarHeight,
       backgroundColor: '#FFF',
       width: "100%",
-      marginBottom: 16,
+      // marginBottom: 8,
       flexDirection: 'row',
       alignContent: 'center',
       justifyContent: "space-between",
@@ -202,4 +186,11 @@ const styles = StyleSheet.create({
       width: '18%',
       alignItems: 'center'
    },
+   content: {
+      backgroundColor: '#FFF',
+      paddingHorizontal: 12,
+   },
+   detailsText: {
+      paddingBottom: 4,
+   }
 })

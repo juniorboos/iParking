@@ -160,8 +160,10 @@ export default function NewReservation({ navigation, route }) {
       console.log(timestampFrom)
       console.log(timestampTo)
       console.log('Parking: ' + parking);
+      console.log('ParkingName: ' + (parkings.find( ({ id }) => id === parking)).name);
       console.log('Region: ' + region);
-      console.log('Vehicle: ' + vehicle);
+      console.log('VehicleId: ' + vehicle);
+      console.log('VehicleModel: ' + (vehicles.find( ({ id }) => id === vehicle)).name);
       console.log('Spot wanted: ' + spot);
       console.log('Max price: ' + maxPrice)
       console.log('Date: ' + (date.toISOString().split('T')[0]).toString());
@@ -180,13 +182,16 @@ export default function NewReservation({ navigation, route }) {
                priceWon: responseData.price,
                status: "Accepted"
             }).then(() => {
-               firebase.database().ref('Users/' + userId + '/Reservations/').push().set({
-                  parking: parking,
-                  spot: responseData.spot,
-                  price: responseData.price,
-                  dateFrom: timestampFrom,
-                  dateTo: timestampTo
-               })
+               // db.collection('Users').doc(userId).collection('Reservations').add({
+
+               // })
+               // firebase.database().ref('Users/' + userId + '/Reservations/').push().set({
+               //    parking: parking,
+               //    spot: responseData.spot,
+               //    price: responseData.price,
+               //    dateFrom: timestampFrom,
+               //    dateTo: timestampTo
+               // })
             })
          } else {
             db.collection('Users').doc(userId).collection('Requests').doc(requestId).update({
@@ -195,14 +200,16 @@ export default function NewReservation({ navigation, route }) {
                status: "Declined"
             })
          }
-         await database().ref('Users/' + userId + '/Request/').remove()
+         // await database().ref('Users/' + userId + '/Request/').remove()
          setLoading(false) 
          navigation.navigate('Home')
       }
 
       db.collection('Users').doc(userId).collection('Requests').add({
          parking: parking,
+         parkingName: (parkings.find( ({ id }) => id === parking)).name,
          region: region,
+         vehicleModel: (vehicles.find( ({ id }) => id === vehicle)).name,
          vehicleId: vehicle,
          spotWanted: spot,
          maxPrice: maxPrice,
@@ -337,15 +344,6 @@ export default function NewReservation({ navigation, route }) {
       showMode('time');
       setDateMode('timeTo')
    };
-   const pickerItens = [{
-      name: "IPB"
-   },
-   {
-      name: "Market"
-   },
-   {
-      name: "Stadium"
-   }]
 
    return (
       <>
