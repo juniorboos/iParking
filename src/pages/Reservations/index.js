@@ -17,8 +17,8 @@ export default function Reservations({ navigation }) {
             reservationsList.push({id: doc.id, ...doc.data()})
          })
          setReservations(reservationsList)
-         console.log("Reservations: ")
-         console.log(reservationsList)
+         // console.log("Reservations: ")
+         // console.log(reservationsList)
       }
 
       loadReservations();
@@ -69,28 +69,43 @@ export default function Reservations({ navigation }) {
         </View>
       );
     };
+
+   const _renderFooter = (content, section, isActive) => {
+      console.log("Section:")
+      console.log(content)
+      console.log(section)
+      console.log(isActive)
+      return (
+        <View style={styles.footer}>
+           {isActive ? 
+           <MaterialIcons name="keyboard-arrow-up" size={28} color="#AD00FF" /> 
+           : <MaterialIcons name="keyboard-arrow-down" size={28} color="#AD00FF" />}
+        </View>
+      );
+    };
    
    const _updateSections = activeSections => {
       setActiveSections(activeSections)
+      // console.log(activeSections)
     };
 
    return (
       <View style={styles.container}>
          <View style={styles.header}>
-               <View style={styles.side}>
-                  <TouchableOpacity onPress={() => navigation.goBack()}>
-                     <Feather name="chevron-left" size={24} color="#AD00FF" />
-                  </TouchableOpacity>
-               </View>
-               <View style={styles.center}>
-                  <Text style={styles.profileName}>Reservations</Text>
-               </View>
-               <View style={styles.side}>
-                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                     <Feather name="menu" color="#AD00FF" size={24} />
-                  </TouchableOpacity>
-               </View>
+            <View style={styles.side}>
+               <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <Feather name="chevron-left" size={24} color="#AD00FF" />
+               </TouchableOpacity>
             </View>
+            <View style={styles.center}>
+               <Text style={styles.profileName}>Reservations</Text>
+            </View>
+            <View style={styles.side}>
+               <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                  <Feather name="menu" color="#AD00FF" size={24} />
+               </TouchableOpacity>
+            </View>
+         </View>
          <View>
             <Accordion
                sections={reservations}
@@ -98,6 +113,7 @@ export default function Reservations({ navigation }) {
                renderSectionTitle={_renderSectionTitle}
                renderHeader={_renderHeader}
                renderContent={_renderContent}
+               renderFooter={_renderFooter}
                onChange={_updateSections}
             />
          </View>
@@ -109,7 +125,7 @@ const styles = StyleSheet.create({
    container: {
       alignItems: 'center',
       // justifyContent: 'center',
-      backgroundColor: '#b8b6b6',
+      backgroundColor: '#EBEBEB',
       height: '100%'
    },
    header: {
@@ -171,8 +187,8 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      // height: 18,
-      // marginBottom: 6,
+      height: 18,
+      marginBottom: 6,
       // borderColor: '#000',
       // borderWidth: 1,
    },
@@ -192,5 +208,14 @@ const styles = StyleSheet.create({
    },
    detailsText: {
       paddingBottom: 4,
+   },
+   footer: {
+      backgroundColor: '#FFF',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOpacity: 1,
+      shadowOffset: {width: 0, height: 3},
+      shadowRadius: 20,
+      // elevation: 6,
    }
 })
