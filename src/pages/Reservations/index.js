@@ -76,7 +76,7 @@ export default function Reservations({ navigation }) {
       console.log(section)
       console.log(isActive)
       return (
-        <View style={styles.footer}>
+        <View style={isActive ? styles.footerActive : styles.footer}>
            {isActive ? 
            <MaterialIcons name="keyboard-arrow-up" size={28} color="#AD00FF" /> 
            : <MaterialIcons name="keyboard-arrow-down" size={28} color="#AD00FF" />}
@@ -210,6 +210,17 @@ const styles = StyleSheet.create({
       paddingBottom: 4,
    },
    footer: {
+      backgroundColor: '#FFF',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOpacity: 1,
+      shadowOffset: {width: 0, height: 3},
+      shadowRadius: 20,
+      // elevation: 6,
+      borderBottomWidth: 3,
+      borderColor: '#AD00FF'
+   },
+   footerActive: {
       backgroundColor: '#FFF',
       alignItems: 'center',
       shadowColor: '#000',
