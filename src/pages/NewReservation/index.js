@@ -146,6 +146,13 @@ export default function NewReservation({ navigation, route }) {
          // return navigation.navigate('Home');
       })
    }
+
+   function timeTest () {
+      console.log('Date: ' + (date.toISOString().split('T')[0]).toString());
+      console.log('Date: ' + date.toDateString());
+      console.log('Time from: ' + timeFrom.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+      console.log('Time to: ' + timeTo);
+   }
    
    async function sendNewReservation () {
       setLoading(true)
@@ -485,7 +492,7 @@ export default function NewReservation({ navigation, route }) {
                color="#FFFFFF"
                fontSize={24}
                justify="center"
-               onPress={() => sendNewReservation()}
+               onPress={() => timeTest()}
             >
                Find a Spot
             </Button>
