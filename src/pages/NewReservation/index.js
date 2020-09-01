@@ -24,8 +24,8 @@ export default function NewReservation({ navigation, route }) {
    const [parking, setParking] = useState()
    const [region, setRegion] = useState('estig')
    const [vehicle, setVehicle] = useState('bicycle')
-   const [spot, setSpot] = useState();
-   const [maxPrice, setMaxPrice] = useState();
+   const [spot, setSpot] = useState(1);
+   const [maxPrice, setMaxPrice] = useState(3);
    const [date, setDate] = useState(new Date());
    const [timeFrom, setTimeFrom] = useState(new Date());
    const [timeTo, setTimeTo] = useState(new Date());
@@ -36,6 +36,8 @@ export default function NewReservation({ navigation, route }) {
    const [show, setShow] = useState(false);
    const [dateMode, setDateMode] = useState();
    const [readData, setReadData] = useState(false)
+   const [timeFromDisplay, setTimeFromDisplay] = useState('')
+   const [timeToDisplay, setTimeToDisplay] = useState('')
 
    const spotId = 0;
    const status = "entrar";
@@ -53,7 +55,9 @@ export default function NewReservation({ navigation, route }) {
       }
       setParkings(route.params)
       loadVehicles()
-      // console.log(route.params)
+      const time = timeFrom.toLocaleTimeString().split(':')
+      setTimeFromDisplay(time[0] + ':' + time[1])
+      setTimeToDisplay(time[0] + ':' + time[1])
    }, [])
 
    // useEffect(() => {
@@ -150,8 +154,11 @@ export default function NewReservation({ navigation, route }) {
    function timeTest () {
       console.log('Date: ' + (date.toISOString().split('T')[0]).toString());
       console.log('Date: ' + date.toDateString());
-      console.log('Time from: ' + timeFrom.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-      console.log('Time to: ' + timeTo);
+      console.log('Time from: ' + timeFromDisplay);
+      console.log('Time to: ' + timeToDisplay);
+      const timestampFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), 0, 0)
+      console.log('TimestampFrom: ',timestampFrom.toTimeString())
+      console.log('TimestampFrom: ',timestampFrom)
    }
    
    async function sendNewReservation () {
@@ -162,10 +169,9 @@ export default function NewReservation({ navigation, route }) {
       const timePartsFrom = timeAllFrom.split(':')
       const timeAllTo = (timeTo.getHours() + ":" + timeTo.getMinutes()).toString()
       const timePartsTo = timeAllTo.split(':')
-      const timestampFrom = new Date(dateParts[0], parseInt(dateParts[1], 10) - 1, dateParts[2], timePartsFrom[0], timePartsFrom[1])
-      const timestampTo = new Date(dateParts[0], parseInt(dateParts[1], 10) - 1, dateParts[2], timePartsTo[0], timePartsTo[1])
-      console.log(timestampFrom)
-      console.log(timestampTo)
+      const timestampFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), 0, 0)
+      const timestampTo = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours(), timeTo.getMinutes(), 0, 0)
+      
       console.log('Parking: ' + parking);
       console.log('ParkingName: ' + (parkings.find( ({ id }) => id === parking)).name);
       console.log('Region: ' + region);
@@ -174,8 +180,8 @@ export default function NewReservation({ navigation, route }) {
       console.log('Spot wanted: ' + spot);
       console.log('Max price: ' + maxPrice)
       console.log('Date: ' + (date.toISOString().split('T')[0]).toString());
-      console.log('Time from: ' + (timeFrom.getHours() + ":" + timeFrom.getMinutes()).toString());
-      console.log('Time to: ' + (timeTo.getHours() + ":" + timeTo.getMinutes()).toString());
+      console.log('Time from: ' + timeFromDisplay);
+      console.log('Time to: ' + timeToDisplay);
       console.log('Range: ' + range);
       console.log('Priority location: ' + priorityLocation);
       console.log('Priority price: ' + (100 - priorityLocation));
@@ -221,8 +227,8 @@ export default function NewReservation({ navigation, route }) {
          spotWanted: spot,
          maxPrice: maxPrice,
          date: (date.toISOString().split('T')[0]).toString(),
-         timeFrom: (timeFrom.getHours() + ":" + timeFrom.getMinutes()).toString(),
-         timeTo: (timeTo.getHours() + ":" + timeTo.getMinutes()).toString(),
+         timeFrom: timeFrom,
+         timeTo: timeTo,
          distanceRange: range,
          locationWeight: priorityLocation,
          priceWeight: 100 - priorityLocation
@@ -318,6 +324,7 @@ export default function NewReservation({ navigation, route }) {
 
    const onChangeDate = (event, selectedDate) => {
       const currentDate = selectedDate || date;
+      const time = currentDate.toLocaleTimeString().split(':')
       setShow(Platform.OS === 'ios');
       switch (dateMode) {
          case 'date':
@@ -325,9 +332,11 @@ export default function NewReservation({ navigation, route }) {
             break;
          case 'timeFrom':
             setTimeFrom(currentDate);
+            setTimeFromDisplay(time[0] + ':' + time[1])
             break;
          case 'timeTo':
             setTimeTo(currentDate);
+            setTimeToDisplay(time[0] + ':' + time[1])
             break;
       }
    }
@@ -397,7 +406,7 @@ export default function NewReservation({ navigation, route }) {
                      rounded
                      totalHeight={64}
                      totalWidth={140}
-                     minValue={0}
+                     minValue={1}
                      maxValue={6}
                      containerStyle={styles.numericContainer}
                      onChange={setSpot} />
@@ -432,7 +441,7 @@ export default function NewReservation({ navigation, route }) {
                   <Text style={styles.label}>From</Text>
                   <TouchableOpacity style={styles.pickerTime} onPress={showTimeFrompicker}>
                      <Text style={styles.dateText}>
-                        {timeFrom.getHours() + ":" + timeFrom.getMinutes()}
+                        {timeFromDisplay}
                      </Text>
                   </TouchableOpacity>
                </View>
@@ -440,7 +449,7 @@ export default function NewReservation({ navigation, route }) {
                   <Text style={styles.label}>To</Text>
                   <TouchableOpacity style={styles.pickerTime} onPress={showTimeTopicker}>
                      <Text style={styles.dateText}>
-                        {timeTo.getHours() + ":" + timeTo.getMinutes()}
+                        {timeToDisplay}
                      </Text>
                   </TouchableOpacity>
                </View>
@@ -492,7 +501,7 @@ export default function NewReservation({ navigation, route }) {
                color="#FFFFFF"
                fontSize={24}
                justify="center"
-               onPress={() => timeTest()}
+               onPress={() => sendNewReservation()}
             >
                Find a Spot
             </Button>
