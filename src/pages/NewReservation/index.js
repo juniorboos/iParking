@@ -157,18 +157,12 @@ export default function NewReservation({ navigation, route }) {
       console.log('Time from: ' + timeFromDisplay);
       console.log('Time to: ' + timeToDisplay);
       const timestampFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), 0, 0)
-      console.log('TimestampFrom: ',timestampFrom.toTimeString())
+      console.log('TimestampFrom: ',timestampFrom.toISOString())
       console.log('TimestampFrom: ',timestampFrom)
    }
    
    async function sendNewReservation () {
       setLoading(true)
-      const dateAll = (date.toISOString().split('T')[0]).toString()
-      const dateParts = dateAll.split('-')
-      const timeAllFrom = (timeFrom.getHours() + ":" + timeFrom.getMinutes()).toString()
-      const timePartsFrom = timeAllFrom.split(':')
-      const timeAllTo = (timeTo.getHours() + ":" + timeTo.getMinutes()).toString()
-      const timePartsTo = timeAllTo.split(':')
       const timestampFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), 0, 0)
       const timestampTo = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours(), timeTo.getMinutes(), 0, 0)
       
@@ -180,7 +174,7 @@ export default function NewReservation({ navigation, route }) {
       console.log('Spot wanted: ' + spot);
       console.log('Max price: ' + maxPrice)
       console.log('Date: ' + (date.toISOString().split('T')[0]).toString());
-      console.log('Time from: ' + timeFromDisplay);
+      console.log('Time from: ' + timestampFrom.toISOString());
       console.log('Time to: ' + timeToDisplay);
       console.log('Range: ' + range);
       console.log('Priority location: ' + priorityLocation);
@@ -227,8 +221,8 @@ export default function NewReservation({ navigation, route }) {
          spotWanted: spot,
          maxPrice: maxPrice,
          date: (date.toISOString().split('T')[0]).toString(),
-         timeFrom: timeFrom,
-         timeTo: timeTo,
+         timeFrom: timestampFrom.toISOString(),
+         timeTo: timestampTo.toISOString(),
          distanceRange: range,
          locationWeight: priorityLocation,
          priceWeight: 100 - priorityLocation
