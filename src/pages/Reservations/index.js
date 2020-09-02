@@ -1,27 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { Feather, MaterialIcons, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Feather, MaterialIcons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { View, StyleSheet, Text, TextInput, ScrollView, Alert, TouchableOpacity, Slider } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
 import firebase, { db } from "../../services/firebase.js";
 import Accordion from 'react-native-collapsible/Accordion';
 
 export default function Reservations({ navigation }) {
    const [reservations, setReservations] = useState([])
+   const [refreshing, setRefreshing] = useState(false)
    const userId = firebase.auth().currentUser.uid;
 
-   useEffect(() => {
-      async function loadReservations () {
-         const reservationsList = [];
-         const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Accepted').get();
-         snapshot.forEach(doc => {
-            reservationsList.push({id: doc.id, ...doc.data()})
-         })
-         setReservations(reservationsList)
-         // console.log("Reservations: ")
-         // console.log(reservationsList)
-      }
+   async function loadReservations () {
+      console.log("carregando...")
+      const reservationsList = [];
+      const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Accepted').get();
+      snapshot.forEach(doc => {
+         const timeFrom = (doc.data().timeFrom.split('T')[1]).split(':')[0] + ':' + (doc.data().timeFrom.split('T')[1]).split(':')[1]
+         const timeTo = (doc.data().timeTo.split('T')[1]).split(':')[0] + ':' + (doc.data().timeTo.split('T')[1]).split(':')[1]
+         reservationsList.push({id: doc.id, ...doc.data(), timeFrom: timeFrom, timeTo: timeTo})
+      })
+      setReservations(reservationsList)
+      // console.log("Reservations: ")
+      // console.log(reservationsList)
+   }
 
+   useEffect(() => {
       loadReservations();
+   }, [])
+
+   const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      loadReservations().then(() => {
+         setRefreshing(false)
+      })
    }, [])
     
    
@@ -102,7 +113,9 @@ export default function Reservations({ navigation }) {
                </TouchableOpacity>
             </View>
          </View>
-         <View>
+         <ScrollView 
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+         >
             <Accordion
                sections={reservations}
                activeSections={activeSections}
@@ -112,7 +125,7 @@ export default function Reservations({ navigation }) {
                renderFooter={_renderFooter}
                onChange={_updateSections}
             />
-         </View>
+         </ScrollView>
       </View>
    )
 }
