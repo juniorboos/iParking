@@ -152,13 +152,13 @@ export default function NewReservation({ navigation, route }) {
    }
 
    function timeTest () {
-      console.log('Date: ' + (date.toISOString().split('T')[0]).toString());
-      console.log('Date: ' + date.toDateString());
-      console.log('Time from: ' + timeFromDisplay);
-      console.log('Time to: ' + timeToDisplay);
-      const timestampFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), 0, 0)
-      console.log('TimestampFrom: ',timestampFrom.toISOString())
-      console.log('TimestampFrom: ',timestampFrom)
+      const actualDate = new Date()
+      const timestampFrom = (new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), 0, 0))
+      const timestampTo = (new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours(), timeTo.getMinutes(), 0, 0))
+      const timestampFrom2 = timestampFrom.toISOString()
+      const timestampFrom3 = new Date(timestampFrom2)
+      console.log(timestampFrom)
+      console.log(timestampFrom3)
    }
    
    async function sendNewReservation () {

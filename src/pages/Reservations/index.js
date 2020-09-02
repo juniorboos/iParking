@@ -8,20 +8,42 @@ import Accordion from 'react-native-collapsible/Accordion';
 export default function Reservations({ navigation }) {
    const [reservations, setReservations] = useState([])
    const [refreshing, setRefreshing] = useState(false)
+   const [currentReservation, setCurrentReservation] = useState()
    const userId = firebase.auth().currentUser.uid;
 
    async function loadReservations () {
       console.log("carregando...")
+      const actualDate = new Date()
       const reservationsList = [];
       const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Accepted').get();
       snapshot.forEach(doc => {
-         const timeFrom = (doc.data().timeFrom.split('T')[1]).split(':')[0] + ':' + (doc.data().timeFrom.split('T')[1]).split(':')[1]
-         const timeTo = (doc.data().timeTo.split('T')[1]).split(':')[0] + ':' + (doc.data().timeTo.split('T')[1]).split(':')[1]
-         reservationsList.push({id: doc.id, ...doc.data(), timeFrom: timeFrom, timeTo: timeTo})
+         const timeFromComp = new Date (doc.data().timeFrom)
+         const timeToComp = new Date (doc.data().timeTo)
+         if(actualDate > timeToComp) {
+            db.collection('Users').doc(userId).collection('Requests').doc(doc.id).update({
+               status: "Finished"
+            })
+         } else {
+            const timeFrom = new Date(doc.data().timeFrom).toTimeString()
+            const timeTo = new Date(doc.data().timeTo).toTimeString()
+            const timeFromDisplay = (timeFrom).split(':')[0] + ':' + (timeFrom).split(':')[1]
+            const timeToDisplay = (timeTo).split(':')[0] + ':' + (timeTo).split(':')[1]
+            reservationsList.push({id: doc.id, ...doc.data(), timeFromDisplay: timeFromDisplay, timeToDisplay: timeToDisplay})
+            if (actualDate > timeFromComp && actualDate < timeToComp) {
+               setCurrentReservation(doc.id)
+            }
+         }
       })
+      reservationsList.sort(function(a,b){
+         return new Date(a.timeFrom) - new Date(b.timeFrom);
+      });
+
+      console.log("Current reservation: ", currentReservation)
+
       setReservations(reservationsList)
-      // console.log("Reservations: ")
-      // console.log(reservationsList)
+
+      console.log("Reservations: ")
+      console.log(reservationsList)
    }
 
    useEffect(() => {
@@ -48,7 +70,7 @@ export default function Reservations({ navigation }) {
    
    const _renderHeader = section => {
       return (
-        <View style={{backgroundColor: '#FFF', marginTop: 8,}}>
+        <View style={{backgroundColor: '#FFF', marginTop: 8, borderBottomWidth:0.1, borderColor: '#FFF'}}>
           <View style={styles.containerAbove}>
             <View style={styles.infoContainer}>
                <View style={styles.nameInfo}>
@@ -59,7 +81,7 @@ export default function Reservations({ navigation }) {
                      <Text>{section.date}</Text>
                   </View>
                   <View>
-                     <Text>{section.timeFrom} - {section.timeTo}</Text>
+                     <Text>{section.timeFromDisplay} - {section.timeToDisplay}</Text>
                   </View>
                </View>
             </View>
@@ -113,9 +135,7 @@ export default function Reservations({ navigation }) {
                </TouchableOpacity>
             </View>
          </View>
-         <ScrollView 
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-         >
+         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             <Accordion
                sections={reservations}
                activeSections={activeSections}
