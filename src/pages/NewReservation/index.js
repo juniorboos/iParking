@@ -188,17 +188,6 @@ export default function NewReservation({ navigation, route }) {
                spotWon: responseData.spot,
                priceWon: responseData.price,
                status: "Accepted"
-            }).then(() => {
-               // db.collection('Users').doc(userId).collection('Reservations').add({
-
-               // })
-               // firebase.database().ref('Users/' + userId + '/Reservations/').push().set({
-               //    parking: parking,
-               //    spot: responseData.spot,
-               //    price: responseData.price,
-               //    dateFrom: timestampFrom,
-               //    dateTo: timestampTo
-               // })
             })
          } else {
             db.collection('Users').doc(userId).collection('Requests').doc(requestId).update({
@@ -207,7 +196,7 @@ export default function NewReservation({ navigation, route }) {
                status: "Declined"
             })
          }
-         // await database().ref('Users/' + userId + '/Request/').remove()
+         await database().ref('Users/' + userId + '/Request/').remove()
          setLoading(false) 
          navigation.navigate('Home')
       }

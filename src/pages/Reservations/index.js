@@ -71,10 +71,6 @@ export default function Reservations({ navigation }) {
     };
 
    const _renderFooter = (content, section, isActive) => {
-      console.log("Section:")
-      console.log(content)
-      console.log(section)
-      console.log(isActive)
       return (
         <View style={isActive ? styles.footerActive : styles.footer}>
            {isActive ? 
