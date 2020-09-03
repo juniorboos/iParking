@@ -8,22 +8,22 @@ import Accordion from 'react-native-collapsible/Accordion';
 export default function Reservations({ navigation }) {
    const [reservations, setReservations] = useState([])
    const [refreshing, setRefreshing] = useState(false)
-   const [currentReservation, setCurrentReservation] = useState()
+   const [currentReservation, setCurrentReservation] = useState("0OFQOelg9NN3XDKANBM5")
    const userId = firebase.auth().currentUser.uid;
 
    async function loadReservations () {
       console.log("carregando...")
       const actualDate = new Date()
       const reservationsList = [];
-      const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Accepted').get();
+      const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Finished').get();
       snapshot.forEach(doc => {
          const timeFromComp = new Date (doc.data().timeFrom)
          const timeToComp = new Date (doc.data().timeTo)
-         if(actualDate > timeToComp) {
-            db.collection('Users').doc(userId).collection('Requests').doc(doc.id).update({
-               status: "Finished"
-            })
-         } else {
+         // if(actualDate > timeToComp) {
+         //    db.collection('Users').doc(userId).collection('Requests').doc(doc.id).update({
+         //       status: "Finished"
+         //    })
+         // } else {
             const timeFrom = new Date(doc.data().timeFrom).toTimeString()
             const timeTo = new Date(doc.data().timeTo).toTimeString()
             const timeFromDisplay = (timeFrom).split(':')[0] + ':' + (timeFrom).split(':')[1]
@@ -32,7 +32,7 @@ export default function Reservations({ navigation }) {
             if (actualDate > timeFromComp && actualDate < timeToComp) {
                setCurrentReservation(doc.id)
             }
-         }
+         // }
       })
       reservationsList.sort(function(a,b){
          return new Date(a.timeFrom) - new Date(b.timeFrom);
@@ -103,13 +103,21 @@ export default function Reservations({ navigation }) {
       );
     };
 
-   const _renderFooter = (content, section, isActive) => {
+   const _renderFooter = (section, content, isActive) => {
       return (
-        <View style={isActive ? styles.footerActive : styles.footer}>
-           {isActive ? 
-           <MaterialIcons name="keyboard-arrow-up" size={28} color="#AD00FF" /> 
-           : <MaterialIcons name="keyboard-arrow-down" size={28} color="#AD00FF" />}
-        </View>
+         <View>
+            <View style={isActive ? styles.footerActive : styles.footer}>
+               {isActive ? 
+               <MaterialIcons name="keyboard-arrow-up" size={28} color="#AD00FF" /> 
+               : <MaterialIcons name="keyboard-arrow-down" size={28} color="#AD00FF" />}
+            </View>
+            {currentReservation == section.id ?
+            <View style={styles.buttonContainer}>
+               <Text style={styles.buttonText}>Enter spot</Text>
+            </View>
+            : null }
+            
+         </View>
       );
     };
    
@@ -257,5 +265,21 @@ const styles = StyleSheet.create({
       shadowOffset: {width: 0, height: 3},
       shadowRadius: 20,
       // elevation: 6,
+   },
+   buttonContainer: {
+      // borderColor: '#000',
+      // borderWidth: 1,
+      borderBottomRightRadius: 20,
+      borderBottomLeftRadius: 20,
+      backgroundColor: '#FF0077',
+      width: '100%',
+      height: 42,
+      justifyContent: 'center',
+      alignItems: 'center'
+   },
+   buttonText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#FFF'
    }
 })
