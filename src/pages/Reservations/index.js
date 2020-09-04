@@ -113,7 +113,7 @@ export default function Reservations({ navigation }) {
             </View>
             {currentReservation == section.id ?
             <View style={styles.buttonContainer}>
-               <Text style={styles.buttonText}>Enter spot</Text>
+               <Text style={styles.buttonText}>Enter/Leave spot</Text>
             </View>
             : null }
             
