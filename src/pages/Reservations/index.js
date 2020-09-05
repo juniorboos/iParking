@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { View, StyleSheet, Text, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, RefreshControl, ScrollView, Linking, Platform } from 'react-native';
 import firebase, { db } from "../../services/firebase.js";
 import Accordion from 'react-native-collapsible/Accordion';
+import openMap from 'react-native-open-maps';
 
 export default function Reservations({ navigation }) {
    const [reservations, setReservations] = useState([])
@@ -86,6 +87,25 @@ export default function Reservations({ navigation }) {
       }
       loadReservations()
    }
+
+   async function goToMaps (request) {
+      console.log('go to parking: ', request.parking)
+      const ref = db.collection('Parkings').doc(request.parking)
+      const doc = await ref.get()
+
+      console.log(doc.data())
+      // openMap({end: { latitude: doc.data().coordinates[0], longitude: doc.data().coordinates[1] }});
+      const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+      const latLng = `${doc.data().coordinates[0]},${doc.data().coordinates[1]}`;
+      const label = 'Custom Label';
+      const url = Platform.select({
+      ios: `${scheme}${label}@${latLng}`,
+      android: `${scheme}${latLng}(${label})`
+      });
+
+
+      Linking.openURL(url); 
+   }
     
 
    const _renderSectionTitle = section => {
@@ -98,26 +118,26 @@ export default function Reservations({ navigation }) {
    
    const _renderHeader = section => {
       return (
-        <View style={{backgroundColor: '#FFF', marginTop: 8, borderBottomWidth:0.1, borderColor: '#FFF'}}>
-          <View style={styles.containerAbove}>
-            <View style={styles.infoContainer}>
-               <View style={styles.nameInfo}>
-                  <Text style={styles.nameText}>{section.parkingName}</Text>
-               </View>
-               <View style={styles.dateContainer}>
-                  <View>
-                     <Text>{section.date}</Text>
+         <View style={{backgroundColor: '#FFF', marginTop: 8, borderBottomWidth:0.1, borderColor: '#FFF'}}>
+            <View style={styles.containerAbove}>
+               <View style={styles.infoContainer}>
+                  <View style={styles.nameInfo}>
+                     <Text style={styles.nameText}>{section.parkingName}</Text>
                   </View>
-                  <View>
-                     <Text>{section.timeFromDisplay} - {section.timeToDisplay}</Text>
+                  <View style={styles.dateContainer}>
+                     <View>
+                        <Text>{section.date}</Text>
+                     </View>
+                     <View>
+                        <Text>{section.timeFromDisplay} - {section.timeToDisplay}</Text>
+                     </View>
                   </View>
                </View>
-            </View>
-            <View style={styles.iconContainer}>
-               <MaterialIcons name="location-on" color={currentReservation == section.id ? "#AD00FF" : "#000"} size={32} />
+               <TouchableOpacity style={styles.iconContainer} onPress={() => goToMaps(section)}>
+                  <MaterialIcons name="location-on" color={currentReservation == section.id ? "#AD00FF" : "#000"} size={32} />
+               </TouchableOpacity>
             </View>
          </View>
-        </View>
       );
     };
    
