@@ -8,6 +8,7 @@ import Accordion from 'react-native-collapsible/Accordion';
 export default function Reservations({ navigation }) {
    const [reservations, setReservations] = useState([])
    const [refreshing, setRefreshing] = useState(false)
+   const [activeSections, setActiveSections] = useState([])
    const [currentReservation, setCurrentReservation] = useState("0OFQOelg9NN3XDKANBM5")
    const userId = firebase.auth().currentUser.uid;
 
@@ -56,9 +57,36 @@ export default function Reservations({ navigation }) {
          setRefreshing(false)
       })
    }, [])
+
+   async function changeSpotState (reservation) {
+      const logRef = db.collection('Users').doc(userId).collection('Requests').doc(reservation.id).collection('Log')
+      const reqRef = db.collection('Users').doc(userId).collection('Requests').doc(reservation.id)
+      const actualDate = new Date()
+      console.log(reservation.id)
+      if (reservation.userStatus == "Out") {
+         console.log("Entrando...")
+         reqRef.update({
+            userStatus: 'In'
+         }).then(() => {
+            logRef.add({
+               action: "Arrived",
+               time: actualDate.toISOString()
+            })
+         })
+      } else {
+         console.log("Saindo...")
+         reqRef.update({
+            userStatus: 'Out'
+         }).then(() => {
+            logRef.add({
+               action: "Departed",
+               time: actualDate.toISOString()
+            })
+         })
+      }
+      loadReservations()
+   }
     
-   
-   const [activeSections, setActiveSections] = useState([])
 
    const _renderSectionTitle = section => {
       return (
@@ -86,7 +114,7 @@ export default function Reservations({ navigation }) {
                </View>
             </View>
             <View style={styles.iconContainer}>
-               <MaterialIcons name="location-on" color="#000" size={32} />
+               <MaterialIcons name="location-on" color={currentReservation == section.id ? "#AD00FF" : "#000"} size={32} />
             </View>
          </View>
         </View>
@@ -112,9 +140,15 @@ export default function Reservations({ navigation }) {
                : <MaterialIcons name="keyboard-arrow-down" size={28} color="#AD00FF" />}
             </View>
             {currentReservation == section.id ?
-            <View style={styles.buttonContainer}>
-               <Text style={styles.buttonText}>Enter/Leave spot</Text>
-            </View>
+
+               section.userStatus == 'Out' ?
+                  <TouchableOpacity style={styles.buttonEnter} onPress={() => changeSpotState(section)}>
+                     <Text style={styles.buttonText}>Enter spot</Text>
+                  </TouchableOpacity>
+               :  
+                  <TouchableOpacity style={styles.buttonLeave} onPress={() => changeSpotState(section)}>
+                     <Text style={styles.buttonText}>Leave spot</Text>
+                  </TouchableOpacity>
             : null }
             
          </View>
@@ -266,7 +300,18 @@ const styles = StyleSheet.create({
       shadowRadius: 20,
       // elevation: 6,
    },
-   buttonContainer: {
+   buttonEnter: {
+      // borderColor: '#000',
+      // borderWidth: 1,
+      borderBottomRightRadius: 20,
+      borderBottomLeftRadius: 20,
+      backgroundColor: '#28d453',
+      width: '100%',
+      height: 42,
+      justifyContent: 'center',
+      alignItems: 'center'
+   },
+   buttonLeave: {
       // borderColor: '#000',
       // borderWidth: 1,
       borderBottomRightRadius: 20,
