@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import { View, StyleSheet, Text, TouchableOpacity, RefreshControl, ScrollView, Linking, Platform } from 'react-native';
 import firebase, { db } from "../../services/firebase.js";
 import Accordion from 'react-native-collapsible/Accordion';
-import openMap from 'react-native-open-maps';
+// import openMap from 'react-native-open-maps';
 
 export default function Reservations({ navigation }) {
    const [reservations, setReservations] = useState([])

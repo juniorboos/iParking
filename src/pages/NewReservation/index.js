@@ -175,6 +175,10 @@ export default function NewReservation({ navigation, route }) {
       console.log('Max price: ' + maxPrice)
       console.log('Date: ' + (date.toISOString().split('T')[0]).toString());
       console.log('Time from: ' + timestampFrom.toISOString());
+      const timefrom1 = timestampFrom.toISOString()
+      const timeFrom2 = new Date(timefrom1).toTimeString()
+      const timeFromDisplay = (timeFrom2).split(':')[0] + ':' + (timeFrom2).split(':')[1]
+      console.log('Time from 2: ', timeFromDisplay)
       console.log('Time to: ' + timeToDisplay);
       console.log('Range: ' + range);
       console.log('Priority location: ' + priorityLocation);
