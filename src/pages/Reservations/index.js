@@ -5,9 +5,10 @@ import { View, StyleSheet, Text, TouchableOpacity, RefreshControl, ScrollView, L
 import firebase, { db } from "../../services/firebase.js";
 import Accordion from 'react-native-collapsible/Accordion';
 // import openMap from 'react-native-open-maps';
+import LoadingScreen from '../../components/LoadingScreen'
 
 export default function Reservations({ navigation }) {
-   const [reservations, setReservations] = useState([])
+   const [reservations, setReservations] = useState(null)
    const [refreshing, setRefreshing] = useState(false)
    const [activeSections, setActiveSections] = useState([])
    const [currentReservation, setCurrentReservation] = useState("0OFQOelg9NN3XDKANBM5")
@@ -192,34 +193,40 @@ export default function Reservations({ navigation }) {
     };
 
    return (
-      <View style={styles.container}>
-         <View style={styles.header}>
-            <View style={styles.side}>
-               <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <Feather name="chevron-left" size={24} color="#AD00FF" />
-               </TouchableOpacity>
+      <>
+      {reservations == null ? (
+         <LoadingScreen />
+      ):(
+         <View style={styles.container}>
+            <View style={styles.header}>
+               <View style={styles.side}>
+                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                     <Feather name="chevron-left" size={24} color="#AD00FF" />
+                  </TouchableOpacity>
+               </View>
+               <View style={styles.center}>
+                  <Text style={styles.profileName}>Reservations</Text>
+               </View>
+               <View style={styles.side}>
+                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                     <Feather name="menu" color="#AD00FF" size={24} />
+                  </TouchableOpacity>
+               </View>
             </View>
-            <View style={styles.center}>
-               <Text style={styles.profileName}>Reservations</Text>
-            </View>
-            <View style={styles.side}>
-               <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                  <Feather name="menu" color="#AD00FF" size={24} />
-               </TouchableOpacity>
-            </View>
+            <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+               <Accordion
+                  sections={reservations}
+                  activeSections={activeSections}
+                  renderSectionTitle={_renderSectionTitle}
+                  renderHeader={_renderHeader}
+                  renderContent={_renderContent}
+                  renderFooter={_renderFooter}
+                  onChange={_updateSections}
+               />
+            </ScrollView>
          </View>
-         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-            <Accordion
-               sections={reservations}
-               activeSections={activeSections}
-               renderSectionTitle={_renderSectionTitle}
-               renderHeader={_renderHeader}
-               renderContent={_renderContent}
-               renderFooter={_renderFooter}
-               onChange={_updateSections}
-            />
-         </ScrollView>
-      </View>
+      )}
+      </>
    )
 }
 
