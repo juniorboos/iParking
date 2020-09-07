@@ -64,10 +64,10 @@ export default function Reservations({ navigation }) {
       const reqRef = db.collection('Users').doc(userId).collection('Requests').doc(reservation.id)
       const actualDate = new Date()
       console.log(reservation.id)
-      if (reservation.userStatus == "Out") {
+      if (reservation.userStatus == false) {
          console.log("Entrando...")
          reqRef.update({
-            userStatus: 'In'
+            userStatus: true
          }).then(() => {
             logRef.add({
                action: "Arrived",
@@ -77,7 +77,7 @@ export default function Reservations({ navigation }) {
       } else {
          console.log("Saindo...")
          reqRef.update({
-            userStatus: 'Out'
+            userStatus: false
          }).then(() => {
             logRef.add({
                action: "Departed",
@@ -161,7 +161,7 @@ export default function Reservations({ navigation }) {
             </View>
             {currentReservation == section.id ?
 
-               section.userStatus == 'Out' ?
+               section.userStatus == false ?
                   <TouchableOpacity style={styles.buttonEnter} onPress={() => changeSpotState(section)}>
                      <Text style={styles.buttonText}>Enter spot</Text>
                   </TouchableOpacity>

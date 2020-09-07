@@ -192,7 +192,7 @@ export default function NewReservation({ navigation, route }) {
                spotWon: responseData.spot,
                priceWon: responseData.price,
                status: "Accepted",
-               userStatus: "Out"
+               userStatus: false
             })
          } else {
             db.collection('Users').doc(userId).collection('Requests').doc(requestId).update({
