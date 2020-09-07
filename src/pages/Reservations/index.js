@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { View, StyleSheet, Text, TouchableOpacity, RefreshControl, ScrollView, Linking, Platform } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, RefreshControl, ScrollView, Linking, Platform, ActivityIndicator } from 'react-native';
 import firebase, { db } from "../../services/firebase.js";
 import Accordion from 'react-native-collapsible/Accordion';
 // import openMap from 'react-native-open-maps';
@@ -11,6 +11,7 @@ export default function Reservations({ navigation }) {
    const [refreshing, setRefreshing] = useState(false)
    const [activeSections, setActiveSections] = useState([])
    const [currentReservation, setCurrentReservation] = useState("0OFQOelg9NN3XDKANBM5")
+   const [loadingState, setLoadingState] = useState(false)
    const userId = firebase.auth().currentUser.uid;
 
    async function loadReservations () {
@@ -40,12 +41,12 @@ export default function Reservations({ navigation }) {
          return new Date(a.timeFrom) - new Date(b.timeFrom);
       });
 
-      console.log("Current reservation: ", currentReservation)
+      // console.log("Current reservation: ", currentReservation)
 
       setReservations(reservationsList)
 
-      console.log("Reservations: ")
-      console.log(reservationsList)
+      // console.log("Reservations: ")
+      // console.log(reservationsList)
    }
 
    useEffect(() => {
@@ -60,10 +61,13 @@ export default function Reservations({ navigation }) {
    }, [])
 
    async function changeSpotState (reservation) {
+
+      setLoadingState(true)
+      console.log(loadingState)
       const logRef = db.collection('Users').doc(userId).collection('Requests').doc(reservation.id).collection('Log')
       const reqRef = db.collection('Users').doc(userId).collection('Requests').doc(reservation.id)
       const actualDate = new Date()
-      console.log(reservation.id)
+      // console.log(reservation.id)
       if (reservation.userStatus == false) {
          console.log("Entrando...")
          reqRef.update({
@@ -72,6 +76,10 @@ export default function Reservations({ navigation }) {
             logRef.add({
                action: "Arrived",
                time: actualDate.toISOString()
+            })
+         }).finally(() => {
+            loadReservations().then(() => {
+               setLoadingState(false)
             })
          })
       } else {
@@ -83,9 +91,12 @@ export default function Reservations({ navigation }) {
                action: "Departed",
                time: actualDate.toISOString()
             })
+         }).finally(() => {
+            loadReservations().then(() => {
+               setLoadingState(false)
+            })
          })
       }
-      loadReservations()
    }
 
    async function goToMaps (request) {
@@ -93,8 +104,6 @@ export default function Reservations({ navigation }) {
       const ref = db.collection('Parkings').doc(request.parking)
       const doc = await ref.get()
 
-      console.log(doc.data())
-      // openMap({end: { latitude: doc.data().coordinates[0], longitude: doc.data().coordinates[1] }});
       const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
       const latLng = `${doc.data().coordinates[0]},${doc.data().coordinates[1]}`;
       const label = 'Custom Label';
@@ -111,7 +120,6 @@ export default function Reservations({ navigation }) {
    const _renderSectionTitle = section => {
       return (
         <View style={styles.content}>
-          {/* <Text>{section.content}</Text> */}
         </View>
       );
     };
@@ -160,14 +168,17 @@ export default function Reservations({ navigation }) {
                : <MaterialIcons name="keyboard-arrow-down" size={28} color="#AD00FF" />}
             </View>
             {currentReservation == section.id ?
-
                section.userStatus == false ?
                   <TouchableOpacity style={styles.buttonEnter} onPress={() => changeSpotState(section)}>
-                     <Text style={styles.buttonText}>Enter spot</Text>
+                     {loadingState == true ?
+                        <ActivityIndicator size="large" color="#FFF" />
+                     :  <Text style={styles.buttonText}>Enter spot</Text>}
                   </TouchableOpacity>
                :  
                   <TouchableOpacity style={styles.buttonLeave} onPress={() => changeSpotState(section)}>
-                     <Text style={styles.buttonText}>Leave spot</Text>
+                     {loadingState == true ?
+                        <ActivityIndicator size="large" color="#FFF" />
+                     :  <Text style={styles.buttonText}>Leave spot</Text>}
                   </TouchableOpacity>
             : null }
             
