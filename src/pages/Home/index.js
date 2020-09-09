@@ -130,7 +130,7 @@ export default function Home({ navigation }) {
                   )
                })}
             </MapView>
-            <ReservationCard style={styles.reservationCard} />
+            {/* <ReservationCard style={styles.reservationCard} /> */}
          </View>
          <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
             <Text style={styles.buttonText}>

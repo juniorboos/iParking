@@ -125,7 +125,7 @@ export default function Reservations({ navigation }) {
    
    const _renderHeader = section => {
       return (
-         <View style={{backgroundColor: '#FFF', marginTop: 8, borderBottomWidth:0.1, borderColor: '#FFF'}}>
+         <View style={{backgroundColor: '#FFF', marginTop: 8, borderBottomWidth:0.2, borderColor: '#FFF'}}>
             <View style={styles.containerAbove}>
                <View style={styles.infoContainer}>
                   <View style={styles.nameInfo}>
