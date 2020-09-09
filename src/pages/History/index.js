@@ -25,13 +25,13 @@ export default function History({ navigation }) {
          </View>
          <Swiper style={styles.wrapper}>
             <View style={styles.slide1}>
-               <Text style={styles.text}>Hello Swiper</Text>
+               <Text style={styles.text}>All</Text>
             </View>
             <View style={styles.slide2}>
-               <Text style={styles.text}>Beautiful</Text>
+               <Text style={styles.text}>Bicycle</Text>
             </View>
             <View style={styles.slide3}>
-               <Text style={styles.text}>And simple</Text>
+               <Text style={styles.text}>Car</Text>
             </View>
          </Swiper>
       </View>

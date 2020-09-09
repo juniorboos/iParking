@@ -11,7 +11,7 @@ export default function Reservations({ navigation }) {
    const [reservations, setReservations] = useState(null)
    const [refreshing, setRefreshing] = useState(false)
    const [activeSections, setActiveSections] = useState([])
-   const [currentReservation, setCurrentReservation] = useState("0OFQOelg9NN3XDKANBM5")
+   const [currentReservation, setCurrentReservation] = useState()
    const [loadingState, setLoadingState] = useState(false)
    const userId = firebase.auth().currentUser.uid;
 
@@ -19,30 +19,28 @@ export default function Reservations({ navigation }) {
       console.log("carregando...")
       const actualDate = new Date()
       const reservationsList = [];
-      const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Finished').get();
+      const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Accepted').get();
       snapshot.forEach(doc => {
-         const timeFromComp = new Date (doc.data().timeFrom)
-         const timeToComp = new Date (doc.data().timeTo)
-         // if(actualDate > timeToComp) {
-         //    db.collection('Users').doc(userId).collection('Requests').doc(doc.id).update({
-         //       status: "Finished"
-         //    })
-         // } else {
-            const timeFrom = new Date(doc.data().timeFrom).toTimeString()
-            const timeTo = new Date(doc.data().timeTo).toTimeString()
-            const timeFromDisplay = (timeFrom).split(':')[0] + ':' + (timeFrom).split(':')[1]
-            const timeToDisplay = (timeTo).split(':')[0] + ':' + (timeTo).split(':')[1]
+         const timeFrom = doc.data().timeFrom.toDate()
+         const timeTo = doc.data().timeTo.toDate()
+         if(actualDate > timeTo) {
+            db.collection('Users').doc(userId).collection('Requests').doc(doc.id).update({
+               status: "Finished"
+            })
+         } else {
+            const timeFromDisplay = (timeFrom.toTimeString()).split(':')[0] + ':' + (timeFrom.toTimeString()).split(':')[1]
+            const timeToDisplay = (timeTo.toTimeString()).split(':')[0] + ':' + (timeTo.toTimeString()).split(':')[1]
             reservationsList.push({id: doc.id, ...doc.data(), timeFromDisplay: timeFromDisplay, timeToDisplay: timeToDisplay})
-            if (actualDate > timeFromComp && actualDate < timeToComp) {
+            if (actualDate > timeFrom && actualDate < timeTo) {
                setCurrentReservation(doc.id)
             }
-         // }
+         }
       })
       reservationsList.sort(function(a,b){
          return new Date(a.timeFrom) - new Date(b.timeFrom);
       });
 
-      // console.log("Current reservation: ", currentReservation)
+      console.log("Current reservation: ", currentReservation)
 
       setReservations(reservationsList)
 
@@ -213,7 +211,7 @@ export default function Reservations({ navigation }) {
                   </TouchableOpacity>
                </View>
             </View>
-            <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+            <ScrollView style={{height: '100%'}} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                <Accordion
                   sections={reservations}
                   activeSections={activeSections}
