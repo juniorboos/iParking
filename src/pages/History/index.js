@@ -33,6 +33,9 @@ export default function History({ navigation }) {
             <View style={styles.slide3}>
                <Text style={styles.text}>Car</Text>
             </View>
+            <View style={styles.slide3}>
+               <Text style={styles.text}>Motorcycle</Text>
+            </View>
          </Swiper>
       </View>
       
