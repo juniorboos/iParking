@@ -23,7 +23,26 @@ export default function History({ navigation }) {
                </TouchableOpacity>
             </View>
          </View>
-         <Swiper style={styles.wrapper}>
+         <View style={styles.headerOptions}>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+               <View style={styles.options}>
+                  <Text>All</Text>
+               </View>
+               <View style={styles.options}>
+                  <Text>Bicycle</Text>
+               </View>
+               <View style={styles.options}>
+                  <Text>Car</Text>
+               </View>
+               <View style={styles.options}>
+                  <Text>Motorcycle</Text>
+               </View>
+               <View style={styles.options}>
+                  <Text>Motorcycle 2</Text>
+               </View>
+            </ScrollView>
+         </View>
+         <Swiper style={styles.wrapper} showsPagination={false}>
             <View style={styles.slide1}>
                <Text style={styles.text}>All</Text>
             </View>
@@ -32,6 +51,9 @@ export default function History({ navigation }) {
             </View>
             <View style={styles.slide3}>
                <Text style={styles.text}>Car</Text>
+            </View>
+            <View style={styles.slide3}>
+               <Text style={styles.text}>Motorcycle</Text>
             </View>
             <View style={styles.slide3}>
                <Text style={styles.text}>Motorcycle</Text>
@@ -81,6 +103,23 @@ const styles = StyleSheet.create({
       lineHeight: 28,
       color: '#AD00FF',
       textAlign: 'center',
+   },
+   headerOptions: {
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      // width: '100%',
+      height: 40,
+      backgroundColor: '#FFF',
+   },
+   options : {
+      width: 100,
+      height: 30,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderColor: '#000',
+      borderRightWidth: 1,
+
    },
    slide1: {
       flex: 1,
