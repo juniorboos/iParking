@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
    detailsText: {
       paddingBottom: 4,
    },
-   footer: {
+   footerActive: {
       backgroundColor: '#FFF',
       alignItems: 'center',
       shadowColor: '#000',
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
       borderBottomWidth: 3,
       borderColor: '#AD00FF'
    },
-   footerActive: {
+   footer: {
       backgroundColor: '#FFF',
       alignItems: 'center',
       shadowColor: '#000',
