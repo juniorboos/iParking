@@ -37,7 +37,7 @@ export default function Reservations({ navigation }) {
          }
       })
       reservationsList.sort(function(a,b){
-         return new Date(a.timeFrom) - new Date(b.timeFrom);
+         return a.timeFrom.toDate() - b.timeFrom.toDate();
       });
 
       console.log("Current reservation: ", currentReservation)

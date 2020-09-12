@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Feather, MaterialIcons, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { View, StyleSheet, Text, TextInput, ScrollView, Alert, TouchableOpacity, Slider } from 'react-native';
+import { View, StyleSheet, Text, Linking, ScrollView, Platform, TouchableOpacity, RefreshControl } from 'react-native';
 import firebase, { db } from "../../services/firebase.js";
 import Accordion from 'react-native-collapsible/Accordion';
 import Swiper from 'react-native-swiper';
@@ -11,25 +11,69 @@ export default function History({ navigation }) {
    const userId = firebase.auth().currentUser.uid;
    const [activeSections, setActiveSections] = useState([])
    const [reservations, setReservations] = useState([])
+   const [vehicles, setVehicles] = useState([])
+   const [bikeHistory, setBikeHistory] = useState([])
+   const [carHistory, setCarHistory] = useState([])
+   const [motorcycleHistory, setMotorcycleHistory] = useState([])
+   const [option, setOption] = useState('All')
+   const [refreshing, setRefreshing] = useState(false)
 
    async function loadReservations () {
-         const reservationsList = [];
-         const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Finished').get();
-         snapshot.forEach(doc => {
-            const timeFrom = doc.data().timeFrom.toDate()
-            const timeTo = doc.data().timeTo.toDate()
-            const timeFromDisplay = (timeFrom.toTimeString()).split(':')[0] + ':' + (timeFrom.toTimeString()).split(':')[1]
-            const timeToDisplay = (timeTo.toTimeString()).split(':')[0] + ':' + (timeTo.toTimeString()).split(':')[1]
-            reservationsList.push({id: doc.id, ...doc.data(), timeFromDisplay: timeFromDisplay, timeToDisplay: timeToDisplay})
-         })
-         setReservations(reservationsList)
-         console.log("Reservations: ")
-         console.log(reservationsList)
-      }
+      const reservationsList = [];
+      const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Finished').get();
+      console.log('Vehicles: ', vehicles)
+      snapshot.forEach(doc => {
+         const timeFrom = doc.data().timeFrom.toDate()
+         const timeTo = doc.data().timeTo.toDate()
+         const timeFromDisplay = (timeFrom.toTimeString()).split(':')[0] + ':' + (timeFrom.toTimeString()).split(':')[1]
+         const timeToDisplay = (timeTo.toTimeString()).split(':')[0] + ':' + (timeTo.toTimeString()).split(':')[1]
+         const vehicleId = doc.data().vehicleId
+
+         const vehicleType =  vehicles.find( ({ id }) => id == vehicleId)
+         reservationsList.push({id: doc.id, ...doc.data(), timeFromDisplay: timeFromDisplay, timeToDisplay: timeToDisplay, vehicleType: vehicleType.type})
+      })
+      setReservations(reservationsList)
+      reservationsList.sort(function(a,b){
+         return b.timeFrom.toDate() - a.timeFrom.toDate();
+      });
+      console.log("Reservations: ")
+      console.log(reservationsList)
+      setBikeHistory(reservationsList.filter(reservation => reservation.vehicleType == 'Bicycle'))
+      setCarHistory(reservationsList.filter(reservation => reservation.vehicleType == 'Car'))
+      setMotorcycleHistory(reservationsList.filter(reservation => reservation.vehicleType == 'Motorcycle'))
+   }
+
+   async function loadVehicles () {
+      const vehiclesList = []
+      const snapshot = await db.collection('Users').doc(userId).collection('Vehicles').get()
+      snapshot.forEach(doc => {
+         vehiclesList.push({id: doc.id, ... doc.data()})
+      })
+      setVehicles(vehiclesList)
+      // console.log("Vehicles: ")
+      // console.log(vehiclesList)
+   }
 
    useEffect(() => {
-      loadReservations();
+      loadVehicles().then(loadReservations)
    },[])
+
+   async function goToMaps (request) {
+      console.log('go to parking: ', request.parking)
+      const ref = db.collection('Parkings').doc(request.parking)
+      const doc = await ref.get()
+
+      const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+      const latLng = `${doc.data().coordinates[0]},${doc.data().coordinates[1]}`;
+      const label = 'Custom Label';
+      const url = Platform.select({
+      ios: `${scheme}${label}@${latLng}`,
+      android: `${scheme}${latLng}(${label})`
+      });
+
+
+      Linking.openURL(url); 
+   }
 
 
    const _renderSectionTitle = section => {
@@ -89,11 +133,28 @@ export default function History({ navigation }) {
    
    const _updateSections = activeSections => {
       setActiveSections(activeSections)
-      // console.log(activeSections)
+      console.log(activeSections)
+
    };
 
+   function switchHistory (option) {
+      setOption(option)
+      setActiveSections([])
+   }
+
+   const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      loadReservations().then(() => {
+         setBikeHistory(reservations.filter(reservation => reservation.vehicleType == 'Bicycle'))
+         setCarHistory(reservations.filter(reservation => reservation.vehicleType == 'Car'))
+         setMotorcycleHistory(reservations.filter(reservation => reservation.vehicleType == 'Motorcycle'))
+
+         setRefreshing(false)
+      })
+   }, [])
+
    return (
-      <View style={styles.container}>
+      <View style={styles.container} >
          <View style={styles.header}>
             <View style={styles.side}>
                <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -110,22 +171,26 @@ export default function History({ navigation }) {
             </View>
          </View>
          <View style={styles.headerOptions}>
-            <TouchableOpacity style={styles.options}>
-               <Text>All</Text>
+            <TouchableOpacity style={styles.options} onPress={() => switchHistory('All')}>
+               <Text style={option == 'All' ? styles.focused : null}>All</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.options}>
-               <Text>Bicycle</Text>
+            <TouchableOpacity style={styles.options} onPress={() => switchHistory('Bicycle')}>
+               <Text style={option == 'Bicycle' ? styles.focused : null}>Bicycle</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.options}>
-               <Text>Car</Text>
+            <TouchableOpacity style={styles.options} onPress={() => switchHistory('Car')}>
+               <Text style={option == 'Car' ? styles.focused : null}>Car</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.options}>
-               <Text>Motorcycle</Text>
+            <TouchableOpacity style={styles.options} onPress={() => switchHistory('Motorcycle')}>
+               <Text style={option == 'Motorcycle' ? styles.focused : null}>Motorcycle</Text>
             </TouchableOpacity>
          </View>
-         <ScrollView style={{height: '100%'}} >
+         <ScrollView contentContainerStyle={{}} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             <Accordion
-               sections={reservations}
+               sections={
+                  option == 'All' ? reservations :
+                  option == 'Bicycle' ? bikeHistory :
+                  option == 'Car' ? carHistory :
+                  motorcycleHistory}
                activeSections={activeSections}
                renderSectionTitle={_renderSectionTitle}
                renderHeader={_renderHeader}
@@ -197,6 +262,10 @@ const styles = StyleSheet.create({
       borderRightWidth: 0.5,
       borderLeftWidth: 0.5,
 
+   },
+   focused: {
+      color: '#AD00FF',
+      fontWeight: "bold"
    },
    slide1: {
       flex: 1,
