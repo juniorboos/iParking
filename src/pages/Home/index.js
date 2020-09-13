@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Feather as Icon } from '@expo/vector-icons';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
@@ -10,6 +10,13 @@ import { db } from '../../services/firebase';
 import CustomCallout from '../../components/CustomCallout'
 import LoadingScreen from '../../components/LoadingScreen'
 import ReservationCard from '../../components/ReservationCard'
+import Button from '../../components/Button';
+import { Animated } from 'react-native';
+
+const { width, height } = Dimensions.get("window");
+const CARD_HEIGHT = 150;
+const CARD_WIDTH = width * 0.8;
+const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
 export default function Home({ navigation }) {
    const [initialPosition, setInitialPosition] = useState([0, 0])
@@ -94,7 +101,7 @@ export default function Home({ navigation }) {
                loadingEnabled={true}
                showsMyLocationButton={false}
                showsUserLocation={true}
-               toolbarEnabled={true}
+               toolbarEnabled={false}
                initialRegion={{
                   latitude: initialPosition[0],
                   longitude: initialPosition[1],
@@ -123,13 +130,34 @@ export default function Home({ navigation }) {
                            latitude: parking.coordinates[0],
                            longitude: parking.coordinates[1],
                      }} >
-                        <Callout>
+                        {/* <Callout >
                            <CustomCallout title={parking.name}/>
-                        </Callout>
+                        </Callout> */}
                      </Marker>
                   )
                })}
             </MapView>
+            {/* <Animated.ScrollView
+               horizontal
+               scrollEventThrottle={1}
+               showsHorizontalScrollIndicator={false}
+               style={styles.scrollView}>
+               { parkings.map((parking, index) => ( */}
+               <View style={styles.card}>
+                  <View >
+                     <Text style={styles.name} > IPB</Text>
+                  </View>
+                  <TouchableOpacity 
+                     style={styles.checkSpotsButton} 
+                     onPress={() => navigation.navigate("NewReservation")}>
+                     <Text style={styles.buttonText}>
+                        Check spots
+                     </Text>
+                     <Icon name="chevron-right" color="#FFF" size={24} />
+                  </TouchableOpacity>
+               </View>
+               {/* ))} */}
+            {/* </Animated.ScrollView> */}
             {/* <ReservationCard style={styles.reservationCard} /> */}
          </View>
          <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
@@ -142,7 +170,7 @@ export default function Home({ navigation }) {
                </Text>
             </View>
          </RectButton>
-         <View style={styles.container}>
+         {/* <View style={styles.container}>
             <TouchableOpacity style={styles.preset}>
                <View style={styles.buttonIcon}>
                   <Text>
@@ -184,7 +212,7 @@ export default function Home({ navigation }) {
                   </Text>
                </View>
             </TouchableOpacity>
-         </View>
+         </View> */}
          <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => navigation.toggleDrawer()}
@@ -202,7 +230,67 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-
+   card: {
+      // padding: 10,
+      position: "absolute",
+      bottom: 30,
+      left: 0,
+      right: 0,
+      paddingTop: 10,
+      elevation: 2,
+      backgroundColor: "#FFF",
+      borderTopLeftRadius: 5,
+      borderTopRightRadius: 5,
+      marginHorizontal: '5%',
+      shadowColor: "#000",
+      shadowRadius: 5,
+      shadowOpacity: 0.3,
+      shadowOffset: { x: 2, y: -2 },
+      borderBottomRightRadius: 20,
+      borderBottomLeftRadius: 20,
+      // height: 150,
+      width: '90%',
+      // marginBottom: 20,
+      overflow: "hidden",
+    },
+   scrollView: {
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      paddingVertical: 10,
+    },
+   bubble: {
+      flexDirection: 'column',
+      alignSelf: 'flex-start',
+      backgroundColor: '#FFF',
+      borderRadius: 6,
+      borderColor: '#CCC',
+      borderWidth: 0.5,
+      padding: 15,
+      width: 150
+   },
+   arrow: {
+      backgroundColor: 'transparent',
+      borderColor: 'transparent',
+      borderTopColor: '#FFF',
+      borderWidth: 16,
+      alignSelf: 'center',
+      marginTop: -32,
+   },
+   arrowBorder: {
+      backgroundColor: 'transparent',
+      borderColor: 'transparent',
+      borderTopColor: '#007a87',
+      borderWidth: 16,
+      alignSelf: 'center',
+      marginTop: -0.5
+   },
+   name: {
+      fontSize: 16,
+      marginBottom: 5,
+      textAlign: 'center'
+   },
    radius: {
       height: 50,
       width: 50,
@@ -276,10 +364,19 @@ const styles = StyleSheet.create({
       color: '#323232',
       fontSize: 16,
    },
+   checkSpotsButton: {
+      backgroundColor: "#AD00FF",
+      height: 50,
+      flexDirection: 'row',
+      overflow: 'hidden',
+      alignItems: 'center',
+      borderBottomRightRadius: 20,
+      borderBottomLeftRadius: 20,
+   },
 
    button: {
       backgroundColor: "#AD00FF",
-      height: 60,
+      height: '8%',
       flexDirection: 'row',
       overflow: 'hidden',
       alignItems: 'center',
@@ -311,7 +408,7 @@ const styles = StyleSheet.create({
    mapContainer: {
       // flex: 1,
       width: '100%',
-      height: '75%',
+      height: '92%',
       // borderRadius: 10,
       // borderWidth: 10,
       justifyContent: 'flex-start',
