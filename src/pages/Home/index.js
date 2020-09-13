@@ -20,8 +20,9 @@ const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
 export default function Home({ navigation }) {
    const [initialPosition, setInitialPosition] = useState([0, 0])
-   const [parkings, setParkings] = useState([]);
-   const [bottom, setBottom] = useState(1);
+   const [parkings, setParkings] = useState([])
+   const [bottom, setBottom] = useState(1)
+   const [parkingFocus, setParkingFocus] = useState(null)
 
    useEffect(() => {
       async function loadPosition() {
@@ -93,10 +94,11 @@ export default function Home({ navigation }) {
          <LoadingScreen />
       ):(
          <>
-         <View style={styles.mapContainer}>
+         <View style={parkingFocus != null ? styles.mapContainer : [styles.mapContainer, {height: '75%'}]}>
             <MapView
                // ref = {(ref)=> this.mapView = ref}
-               style={[styles.map, { bottom: bottom }]}
+               onPress={() => setParkingFocus(null)}
+               style={styles.map }
                minZoomLevel={13}
                loadingEnabled={true}
                showsMyLocationButton={false}
@@ -125,7 +127,7 @@ export default function Home({ navigation }) {
                         // onPress={() => loadSpots()}
                         key={index}
                         pinColor="#9D11DF"
-                        onPress={markerHack}
+                        onPress={() => setParkingFocus(parking)}
                         coordinate={{
                            latitude: parking.coordinates[0],
                            longitude: parking.coordinates[1],
@@ -143,24 +145,27 @@ export default function Home({ navigation }) {
                showsHorizontalScrollIndicator={false}
                style={styles.scrollView}>
                { parkings.map((parking, index) => ( */}
-               <View style={styles.card}>
-                  <View >
-                     <Text style={styles.name} > IPB</Text>
+               {parkingFocus != null ?
+                  <View style={styles.card}>
+                     <View >
+                        <Text style={styles.name} > {parkingFocus.name}</Text>
+                     </View>
+                     <TouchableOpacity 
+                        style={styles.checkSpotsButton} 
+                        onPress={() => navigation.navigate("NewReservation")}>
+                        <Text style={styles.buttonText}>
+                           Check spots
+                        </Text>
+                        <Icon name="chevron-right" color="#FFF" size={24} />
+                     </TouchableOpacity>
                   </View>
-                  <TouchableOpacity 
-                     style={styles.checkSpotsButton} 
-                     onPress={() => navigation.navigate("NewReservation")}>
-                     <Text style={styles.buttonText}>
-                        Check spots
-                     </Text>
-                     <Icon name="chevron-right" color="#FFF" size={24} />
-                  </TouchableOpacity>
-               </View>
+               : null}
+               
                {/* ))} */}
             {/* </Animated.ScrollView> */}
             {/* <ReservationCard style={styles.reservationCard} /> */}
          </View>
-         <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
+         <RectButton style={parkingFocus != null ? styles.button : [styles.button, {height: 60}]} onPress={() => navigation.navigate("NewReservation", parkings)}>
             <Text style={styles.buttonText}>
                Make New Reservation
             </Text>
@@ -170,7 +175,8 @@ export default function Home({ navigation }) {
                </Text>
             </View>
          </RectButton>
-         {/* <View style={styles.container}>
+         {parkingFocus == null ?
+         <View style={styles.container}>
             <TouchableOpacity style={styles.preset}>
                <View style={styles.buttonIcon}>
                   <Text>
@@ -212,7 +218,8 @@ export default function Home({ navigation }) {
                   </Text>
                </View>
             </TouchableOpacity>
-         </View> */}
+         </View> 
+         : null }
          <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => navigation.toggleDrawer()}
@@ -370,6 +377,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       overflow: 'hidden',
       alignItems: 'center',
+      paddingHorizontal: 10,
       borderBottomRightRadius: 20,
       borderBottomLeftRadius: 20,
    },
@@ -380,6 +388,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       overflow: 'hidden',
       alignItems: 'center',
+      paddingHorizontal: 10,
    },
 
    buttonIcon: {
