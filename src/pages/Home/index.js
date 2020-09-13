@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Feather as Icon } from '@expo/vector-icons';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
@@ -12,11 +12,6 @@ import LoadingScreen from '../../components/LoadingScreen'
 import ReservationCard from '../../components/ReservationCard'
 import Button from '../../components/Button';
 import { Animated } from 'react-native';
-
-const { width, height } = Dimensions.get("window");
-const CARD_HEIGHT = 150;
-const CARD_WIDTH = width * 0.8;
-const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
 export default function Home({ navigation }) {
    const [initialPosition, setInitialPosition] = useState([0, 0])
@@ -81,13 +76,11 @@ export default function Home({ navigation }) {
    //    })
    // }
 
-   function markerHack () {
-      if (bottom == 1) {
-         setBottom(0)
-      }
+   function checkSpots (parkingId) {
+      //HTTP request
+      //Listen for changes in realtime db
    }
-
-
+   
    return (
       <> 
       {initialPosition[0] == 0 ? (
@@ -152,7 +145,7 @@ export default function Home({ navigation }) {
                      </View>
                      <TouchableOpacity 
                         style={styles.checkSpotsButton} 
-                        onPress={() => navigation.navigate("NewReservation")}>
+                        onPress={() => checkSpots(parkingFocus.id)}>
                         <Text style={styles.buttonText}>
                            Check spots
                         </Text>
@@ -372,7 +365,7 @@ const styles = StyleSheet.create({
       fontSize: 16,
    },
    checkSpotsButton: {
-      backgroundColor: "#AD00FF",
+      backgroundColor: "#FF0077",
       height: 50,
       flexDirection: 'row',
       overflow: 'hidden',
