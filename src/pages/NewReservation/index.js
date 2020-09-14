@@ -14,7 +14,6 @@ import SelectInput from '../../components/SelectInput';
 import LoadingScreen from '../../components/LoadingScreen';
 import firebase, { db } from "../../services/firebase.js";
 import api from "../../services/api";
-import { database } from 'firebase';
 
 export default function NewReservation({ navigation, route }) {
    const [parkings, setParkings] = useState([])
@@ -197,9 +196,9 @@ export default function NewReservation({ navigation, route }) {
                status: "Declined"
             })
          }
-         await database().ref('Users/' + userId + '/Request/').remove()
+         await firebase.database().ref('Users/' + userId + '/Request/').remove()
          setLoading(false) 
-         navigation.navigate('Home')
+         navigation.navigate('Reservations')
       }
 
       db.collection('Users').doc(userId).collection('Requests').add({

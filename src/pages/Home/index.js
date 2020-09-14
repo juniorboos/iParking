@@ -5,7 +5,7 @@ import MapView, { Marker, Callout } from 'react-native-maps';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { RectButton } from 'react-native-gesture-handler';
-import { db } from '../../services/firebase';
+import firebase, { db } from '../../services/firebase';
 
 import CustomCallout from '../../components/CustomCallout'
 import LoadingScreen from '../../components/LoadingScreen'
@@ -18,6 +18,7 @@ export default function Home({ navigation }) {
    const [parkings, setParkings] = useState([])
    const [bottom, setBottom] = useState(1)
    const [parkingFocus, setParkingFocus] = useState(null)
+   const userId = firebase.auth().currentUser.uid;
 
    useEffect(() => {
       async function loadPosition() {
@@ -76,7 +77,25 @@ export default function Home({ navigation }) {
    //    })
    // }
 
-   function checkSpots (parkingId) {
+   async function checkSpots (parkingId) {
+      const { data } = await firebase.functions().httpsCallable('searchSpots')({
+         parking: parkingId
+      })
+
+      console.log("Aguardando spots...")
+      const userRef = firebase.database().ref('Users/' + userId).child('SearchSpots')
+      userRef.on('child_added', snapshot => {
+         if(snapshot.val() != null) {
+            console.log("Spot found")
+            console.log(snapshot.val())
+         }
+      })
+
+      setTimeout(() => {
+         console.log("Parou de escutar")
+         userRef.off()
+         userRef.remove()
+      }, 5000)
       //HTTP request
       //Listen for changes in realtime db
    }
