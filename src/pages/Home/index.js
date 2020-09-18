@@ -95,9 +95,8 @@ export default function Home({ navigation }) {
          console.log("Parou de escutar")
          userRef.off()
          userRef.remove()
-      }, 5000)
-      //HTTP request
-      //Listen for changes in realtime db
+      }, 15000)
+
    }
    
    return (

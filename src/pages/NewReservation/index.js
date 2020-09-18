@@ -165,20 +165,21 @@ export default function NewReservation({ navigation, route }) {
       const timestampFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), 0, 0)
       const timestampTo = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours(), timeTo.getMinutes(), 0, 0)
       
-      console.log('Parking: ' + parking);
-      console.log('ParkingName: ' + (parkings.find( ({ id }) => id === parking)).name);
-      console.log('Region: ' + region);
-      console.log('VehicleId: ' + vehicle);
-      console.log('VehicleModel: ' + (vehicles.find( ({ id }) => id === vehicle)).name);
-      console.log('Spot wanted: ' + spot);
-      console.log('Max price: ' + maxPrice)
-      console.log('Date: ' + (date.toISOString().split('T')[0]).toString());
-      console.log('Time from: ' + timestampFrom.toISOString());
-      console.log('Time to: ' + timeToDisplay);
-      console.log('Range: ' + range);
-      console.log('Priority location: ' + priorityLocation);
-      console.log('Priority price: ' + (100 - priorityLocation));
-      console.log('User id: ' + userId);
+      console.log('parking: ' + parking);
+      console.log('parkingName: ' + (parkings.find( ({ id }) => id === parking)).name);
+      console.log('region: ' + region);
+      console.log('vehicleId: ' + vehicle);
+      console.log('vehicleModel: ' + (vehicles.find( ({ id }) => id === vehicle)).name);
+      console.log('spotWanted: ' + spot);
+      console.log('maxPrice: ' + maxPrice)
+      console.log('initialDate: ' + (date.toISOString().split('T')[0]).toString());
+      console.log('endDate: ' + (date.toISOString().split('T')[0]).toString());
+      console.log('timeFrom: ' + timestampFrom.toISOString());
+      console.log('timeTo: ' + timeToDisplay);
+      console.log('distanceRange: ' + range);
+      console.log('locationWeight: ' + priorityLocation);
+      console.log('priceWeight: ' + (100 - priorityLocation));
+      console.log('driverId: ' + userId);
 
       async function confirmSpot (decision, requestId, responseData) {
          if (decision == "accept"){
@@ -208,12 +209,12 @@ export default function NewReservation({ navigation, route }) {
          vehicleModel: (vehicles.find( ({ id }) => id === vehicle)).name,
          vehicleId: vehicle,
          spotWanted: spot,
-         maxPrice: maxPrice,
+         maxPrice: maxPrice.toString(),
          date: (date.toISOString().split('T')[0]).toString(),
+         initialDate: (date.toISOString().split('T')[0]).toString(),
+         endDate: (date.toISOString().split('T')[0]).toString(),
          timeFrom: timestampFrom,
          timeTo: timestampTo,
-         // timeFrom: timestampFrom.toISOString(),
-         // timeTo: timestampTo.toISOString(),
          distanceRange: range,
          locationWeight: priorityLocation,
          priceWeight: 100 - priorityLocation
@@ -244,11 +245,12 @@ export default function NewReservation({ navigation, route }) {
          // })
 
          console.log("Aguardando resposta... ")
+         const readFlag = false
          const userRef = firebase.database().ref('Users/' + userId).child('Request')
          userRef.on('value', snapshot => {
             console.log("Encontrou")
-            if(snapshot.val() != null && readData == false) {
-               setReadData(true)
+            if(snapshot.val() != null && readFlag == false) {
+               readFlag = true
                console.log(snapshot.val());
                if(snapshot.val().reservation == "true"){
                   Alert.alert(
