@@ -85,81 +85,7 @@ export default function NewReservation({ navigation, route }) {
          { cancelable: false }
       );
    }
-  
-   function handleSpot () {
-      const data = {
-         initialDate: (date.toISOString().split('T')[0]).toString(),
-         endDate: (date.toISOString().split('T')[0]).toString(),
-         initialTime: (timeFrom.getHours() + ":" + timeFrom.getMinutes() + ":00").toString(),
-         endTime: (timeTo.getHours() + ":" + timeTo.getMinutes() + ":00").toString(),
-         spotId: spot,
-         driverId: userId
-      }
-
-      if (status == "entrar") {
-         console.log("Entrando no spot...")
-         api.post('usespot', data).then(response => {
-            const responseBody = JSON.parse(response.data)
-            console.log(responseBody);
-            if (responseBody.reservation == true) {
-               createButtonAlert("Success", `${responseBody.spot} - R$ ${responseBody.price}`);
-            }else {
-               createButtonAlert("Failed", "Error in reservation.");
-            }
-         }).then(() => {
-            status = "sair"
-            // return navigation.navigate('Home');
-         })
-      }
-
-      if (status == "sair") {
-         console.log("Saindo do spot...")
-         api.post('leavespot', data).then(response => {
-            const responseBody = JSON.parse(response.data)
-            console.log(responseBody);
-            if (responseBody == "arriving") {
-               createButtonAlert("Success", "Entrando na vaga.");
-            }
-            if (responseBody == "departuring") {
-               createButtonAlert("Success", "Saindo da vaga.");
-            }
-         }).then(() => {
-            status = "entrar"
-            // return navigation.navigate('Home');
-         })
-      }      
-   }
-
-   function KillAgent () {
-
-      const data = {
-         driverId: userId,
-         location: region,
-         price: maxPrice,
-         initialDate: (date.toISOString().split('T')[0]).toString(),
-         endDate: (date.toISOString().split('T')[0]).toString(),
-         initialTime: (timeFrom.getHours() + ":" + timeFrom.getMinutes() + ":00").toString(),
-         endTime: (timeTo.getHours() + ":" + timeTo.getMinutes() + ":00").toString()
-      }
-
-      api.post('kill', data).then(response => {
-         const responseBody = JSON.parse(response.data)
-         console.log(responseBody);
-      }).then(() => {
-         // return navigation.navigate('Home');
-      })
-   }
-
-   function timeTest () {
-      const actualDate = new Date()
-      const timestampFrom = (new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), 0, 0))
-      const timestampTo = (new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours(), timeTo.getMinutes(), 0, 0))
-      const timestampFrom2 = timestampFrom.toISOString()
-      const timestampFrom3 = new Date(timestampFrom2)
-      console.log(timestampFrom)
-      console.log(timestampFrom3)
-   }
-   
+     
    async function sendNewReservation () {
       setLoading(true)
       const timestampFrom = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), 0, 0)
@@ -221,29 +147,7 @@ export default function NewReservation({ navigation, route }) {
       }).then((response) => {
          console.log("added")
          console.log(response.id)
-         // const data = {
-         //    driverId: userId,
-         //    location: region,
-         //    price: maxPrice,
-         //    initialDate: (date.toISOString().split('T')[0]).toString(),
-         //    endDate: (date.toISOString().split('T')[0]).toString(),
-         //    initialTime: (timeFrom.getHours() + ":" + timeFrom.getMinutes() + ":00").toString(),
-         //    endTime: (timeTo.getHours() + ":" + timeTo.getMinutes() + ":00").toString()
-         // }
-
-         // api.post('request', data).then(response => {
-         //    const responseBody = JSON.parse(response.data)
-         //    console.log(responseBody);
-         //    if (responseBody.reservation == true) {
-         //       createButtonAlert("Success", `${responseBody.spot} - R$ ${responseBody.price}`);
-         //       spotId = responseBody.spot;
-         //    }else {
-         //       createButtonAlert("Failed", "Error in reservation.");
-         //    }
-         // }).then(() => {
-         //    // return navigation.navigate('Home');
-         // })
-
+         
          console.log("Aguardando resposta... ")
          const readFlag = false
          const userRef = firebase.database().ref('Users/' + userId).child('Request')
@@ -492,24 +396,6 @@ export default function NewReservation({ navigation, route }) {
             >
                Find a Spot
             </Button>
-            {/* <Button
-               backgroundColor="#AD00FF"
-               color="#FFFFFF"
-               fontSize={24}
-               justify="center"
-               onPress={() => KillAgent()}
-            >
-               Kill
-            </Button>
-            <Button
-               backgroundColor="#AD00FF"
-               color="#FFFFFF"
-               fontSize={24}
-               justify="center"
-               onPress={() => handleSpot()}
-            >
-               Enter / Leave
-            </Button> */}
          </HideWithKeyboard>
       </View>
       )}
