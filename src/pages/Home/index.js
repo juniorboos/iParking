@@ -16,9 +16,11 @@ import { Animated } from 'react-native';
 export default function Home({ navigation }) {
    const [initialPosition, setInitialPosition] = useState([0, 0])
    const [parkings, setParkings] = useState([])
+   const [spots, setSpots] = useState([])
    const [bottom, setBottom] = useState(1)
    const [parkingFocus, setParkingFocus] = useState(null)
    const userId = firebase.auth().currentUser.uid;
+   const [checkingSpots, setCheckingSpots] = useState(false)
 
    useEffect(() => {
       async function loadPosition() {
@@ -31,7 +33,7 @@ export default function Home({ navigation }) {
             }
 
             const location = await Location.getCurrentPositionAsync();
-            console.log(location.coords)
+            // console.log(location.coords)
             const { latitude, longitude } = location.coords;
 
             setInitialPosition([
@@ -81,18 +83,21 @@ export default function Home({ navigation }) {
       const { data } = await firebase.functions().httpsCallable('searchSpots')({
          parking: parkingId
       })
-
+      const spotsList = []
       console.log("Aguardando spots...")
       const userRef = firebase.database().ref('Users/' + userId).child('SearchSpots')
       userRef.on('child_added', snapshot => {
          if(snapshot.val() != null) {
             console.log("Spot found")
+            spotsList.push(snapshot.val())
             console.log(snapshot.val())
          }
       })
 
       setTimeout(() => {
          console.log("Parou de escutar")
+         setCheckingSpots(true)
+         setSpots(spotsList)
          userRef.off()
          userRef.remove()
       }, 15000)
@@ -108,7 +113,7 @@ export default function Home({ navigation }) {
          <View style={parkingFocus != null ? styles.mapContainer : [styles.mapContainer, {height: '75%'}]}>
             <MapView
                // ref = {(ref)=> this.mapView = ref}
-               onPress={() => setParkingFocus(null)}
+               onPress={() => {setParkingFocus(null), setCheckingSpots(false)}}
                style={styles.map }
                minZoomLevel={13}
                loadingEnabled={true}
@@ -121,34 +126,33 @@ export default function Home({ navigation }) {
                   latitudeDelta: 0.014,
                   longitudeDelta: 0.014,
                }}>
-               {/* <Marker
-                  // pinColor="#9D11DF"
-                  coordinate={{
-                     latitude: initialPosition[0],
-                     longitude: initialPosition[1],
-               }}>
-                  <View style={styles.radius}>
-                     <View style={styles.marker} />
-                  </View>
-               </Marker> */}
-               { parkings.map((parking, index) => {
-                  return (
-                     <Marker
-                        // onPress={() => changeRegion(parking.coordinates)}
-                        // onPress={() => loadSpots()}
-                        key={index}
-                        pinColor="#9D11DF"
-                        onPress={() => setParkingFocus(parking)}
-                        coordinate={{
-                           latitude: parking.coordinates[0],
-                           longitude: parking.coordinates[1],
-                     }} >
-                        {/* <Callout >
-                           <CustomCallout title={parking.name}/>
-                        </Callout> */}
-                     </Marker>
-                  )
-               })}
+
+               {  checkingSpots == true ?
+                     spots.map((spot, index) => {
+                     return (
+                        <Marker
+                           key={index}
+                           pinColor="#34CB79"
+                           onPress={() => console.log(checkingSpots)}
+                           coordinate={{
+                              latitude: spot.coordinates[0],
+                              longitude: spot.coordinates[1],
+                           }} 
+                        />
+                     )})
+                  :
+                     parkings.map((parking, index) => {
+                     return (
+                        <Marker
+                           key={index}
+                           pinColor="#9D11DF"
+                           onPress={() => setParkingFocus(parking)}
+                           coordinate={{
+                              latitude: parking.coordinates[0],
+                              longitude: parking.coordinates[1],
+                        }} />
+                     )})
+               }
             </MapView>
             {/* <Animated.ScrollView
                horizontal
