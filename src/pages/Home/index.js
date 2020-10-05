@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Feather as Icon } from '@expo/vector-icons';
+import { Feather as Icon, MaterialIcons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import Constants from 'expo-constants';
@@ -83,24 +83,51 @@ export default function Home({ navigation }) {
       const { data } = await firebase.functions().httpsCallable('searchSpots')({
          parking: parkingId
       })
-      const spotsList = []
-      console.log("Aguardando spots...")
-      const userRef = firebase.database().ref('Users/' + userId).child('SearchSpots')
-      userRef.on('child_added', snapshot => {
-         if(snapshot.val() != null) {
-            console.log("Spot found")
-            spotsList.push(snapshot.val())
-            console.log(snapshot.val())
+      const spotsList = [
+         {
+            parking:"IPB",
+            driverId:"1UgX8NkcA7foU4GJdQZmtN5ez5x1",
+            coordinates:[41.799392,-6.768929],
+            spotId:"001"
+         },
+         {
+            parking:"IPB",
+            driverId:"1UgX8NkcA7foU4GJdQZmtN5ez5x1",
+            coordinates:[41.796452,-6.767786],
+            spotId:"002"
+         },
+         {
+            parking:"IPB",
+            driverId:"1UgX8NkcA7foU4GJdQZmtN5ez5x1",
+            coordinates:[41.797770, -6.767289],
+            spotId:"003"
+         },
+         {
+            parking:"IPB",
+            driverId:"1UgX8NkcA7foU4GJdQZmtN5ez5x1",
+            coordinates:[41.798982, -6.765439],
+            spotId:"004"
          }
-      })
+      ]
+      console.log("Aguardando spots...")
+      setCheckingSpots(true)
+      setSpots(spotsList)
+      // const userRef = firebase.database().ref('Users/' + userId).child('SearchSpots')
+      // userRef.on('child_added', snapshot => {
+      //    if(snapshot.val() != null) {
+      //       console.log("Spot found")
+      //       spotsList.push(snapshot.val())
+      //       console.log(snapshot.val())
+      //    }
+      // })
 
-      setTimeout(() => {
-         console.log("Parou de escutar")
-         setCheckingSpots(true)
-         setSpots(spotsList)
-         userRef.off()
-         userRef.remove()
-      }, 15000)
+      // setTimeout(() => {
+      //    console.log("Parou de escutar")
+      //    setCheckingSpots(true)
+      //    setSpots(spotsList)
+      //    userRef.off()
+      //    userRef.remove()
+      // }, 15000)
 
    }
    
@@ -132,8 +159,9 @@ export default function Home({ navigation }) {
                      return (
                         <Marker
                            key={index}
-                           pinColor="#34CB79"
+                           // pinColor="#34CB79"
                            onPress={() => console.log(checkingSpots)}
+                           icon={require('../../assets/spot_icon.svg')}
                            coordinate={{
                               latitude: spot.coordinates[0],
                               longitude: spot.coordinates[1],
@@ -145,8 +173,9 @@ export default function Home({ navigation }) {
                      return (
                         <Marker
                            key={index}
-                           pinColor="#9D11DF"
+                           // pinColor="#9D11DF"
                            onPress={() => setParkingFocus(parking)}
+                           icon={require('../../assets/parking_icon.svg')}
                            coordinate={{
                               latitude: parking.coordinates[0],
                               longitude: parking.coordinates[1],
