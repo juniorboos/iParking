@@ -169,25 +169,25 @@ export default function Home({ navigation }) {
 
          </View>
          <View style={styles.footer}>
-         {parkingFocus != null ?
-                  <View style={styles.card}>
-                     <View >
-                        <Image 
-                           style = {{height: 100, resizeMode: 'cover', marginBottom: 6 }} 
-                           source={{uri:parkingFocus.image}}
-                        />
-                        <Text style={styles.name} > {parkingFocus.name}</Text>
-                     </View>
-                     <TouchableOpacity 
-                        style={styles.checkSpotsButton} 
-                        onPress={() => checkSpots(parkingFocus.id)}>
-                        <Text style={styles.buttonText}>
-                           Check spots
-                        </Text>
-                        <Icon name="chevron-right" color="#FFF" size={24} />
-                     </TouchableOpacity>
+            {parkingFocus != null ?
+               <View style={styles.card}>
+                  <View >
+                     <Image 
+                        style = {{height: 100, resizeMode: 'cover', marginBottom: 6 }} 
+                        source={{uri:parkingFocus.image}}
+                     />
+                     <Text style={styles.name} > {parkingFocus.name}</Text>
                   </View>
-               : null}
+                  <TouchableOpacity 
+                     style={styles.checkSpotsButton} 
+                     onPress={() => checkSpots(parkingFocus.id)}>
+                     <Text style={styles.buttonText}>
+                        Check spots
+                     </Text>
+                     <Icon name="chevron-right" color="#FFF" size={24} />
+                  </TouchableOpacity>
+               </View>
+            : null}
             <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
                <Text style={styles.buttonText}>
                   Make New Reservation
