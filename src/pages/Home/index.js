@@ -34,7 +34,6 @@ export default function Home({ navigation }) {
             }
 
             const location = await Location.getCurrentPositionAsync();
-            // console.log(location.coords)
             const { latitude, longitude } = location.coords;
 
             setInitialPosition([
@@ -61,24 +60,6 @@ export default function Home({ navigation }) {
       loadPosition();
    }, [])
 
-   // function changeRegion (coordinates) {
-   //    const region = {
-   //       latitude: coordinates[0],
-   //       longitude: coordinates[1],
-   //       latitudeDelta: 0.014,
-   //       longitudeDelta: 0.014,
-   //    }
-   //    this.mapView.animateToRegion(region, 1000)
-   // }
-
-   // function loadSpots () {
-   //    api.post('available', data).then(response => {
-   //       const responseBody = JSON.parse(response.data)
-   //       console.log(responseBody);
-   //    }).then(() => {
-   //       // return navigation.navigate('Home');
-   //    })
-   // }
 
    async function checkSpots (parkingId) {
       const { data } = await firebase.functions().httpsCallable('searchSpots')({
@@ -160,13 +141,11 @@ export default function Home({ navigation }) {
                      return (
                         <Marker
                            key={index}
-                           // pinColor="#34CB79"
                            onPress={() => console.log(checkingSpots)}
                            coordinate={{
                               latitude: spot.coordinates[0],
                               longitude: spot.coordinates[1],
                            }} 
-                           // image={require('../../assets/spot_icon.png')}
                         >
                            <MaterialIcons name="location-on" color="#34CB79" size={42} />
                         </Marker>
@@ -176,25 +155,17 @@ export default function Home({ navigation }) {
                      return (
                         <Marker
                            key={index}
-                           // pinColor="#9D11DF"
                            onPress={() => setParkingFocus(parking)}
                            coordinate={{
                               latitude: parking.coordinates[0],
                               longitude: parking.coordinates[1],
                            }}
-                           // image={require('../../assets/parking_icon.png')}
                         >
                            <MaterialIcons name="location-on" color="#9D11DF" size={42} />
                         </Marker>
                      )})
                }
             </MapView>
-            {/* <Animated.ScrollView
-               horizontal
-               scrollEventThrottle={1}
-               showsHorizontalScrollIndicator={false}
-               style={styles.scrollView}>
-               { parkings.map((parking, index) => ( */}
                {parkingFocus != null ?
                   <View style={styles.card}>
                      <View >
@@ -214,10 +185,6 @@ export default function Home({ navigation }) {
                      </TouchableOpacity>
                   </View>
                : null}
-               
-               {/* ))} */}
-            {/* </Animated.ScrollView> */}
-            {/* <ReservationCard style={styles.reservationCard} /> */}
          </View>
          <RectButton style={parkingFocus != null ? styles.button : [styles.button, {height: 60}]} onPress={() => navigation.navigate("NewReservation", parkings)}>
             <Text style={styles.buttonText}>
@@ -292,12 +259,10 @@ export default function Home({ navigation }) {
 
 const styles = StyleSheet.create({
    card: {
-      // padding: 10,
       position: "absolute",
       bottom: 30,
       left: 0,
       right: 0,
-      // paddingTop: 10,
       elevation: 2,
       backgroundColor: "#FFF",
       borderTopLeftRadius: 5,
@@ -309,9 +274,7 @@ const styles = StyleSheet.create({
       shadowOffset: { x: 2, y: -2 },
       borderBottomRightRadius: 20,
       borderBottomLeftRadius: 20,
-      // height: 150,
       width: '90%',
-      // marginBottom: 20,
       overflow: "hidden",
     },
    scrollView: {
