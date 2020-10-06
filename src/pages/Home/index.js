@@ -371,7 +371,9 @@ const styles = StyleSheet.create({
       maxHeight: '20%'
    },
    preset: {
-      marginBottom: 4,
+      // marginBottom: 4,
+      borderBottomWidth: 4,
+      borderColor: '#CCC',
       backgroundColor: "#FFF",
       height: 75,
       flexDirection: 'row',
@@ -417,7 +419,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       overflow: 'hidden',
       alignItems: 'center',
-      paddingHorizontal: 10,
+      // paddingHorizontal: 10,
    },
 
    buttonIcon: {
