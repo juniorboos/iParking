@@ -121,7 +121,6 @@ export default function Home({ navigation }) {
          <>
          <View style={parkingFocus != null ? styles.mapContainer : [styles.mapContainer, {height: '75%'}]}>
             <MapView
-               // ref = {(ref)=> this.mapView = ref}
                onPress={() => {setParkingFocus(null), setCheckingSpots(false)}}
                style={styles.map }
                minZoomLevel={13}
