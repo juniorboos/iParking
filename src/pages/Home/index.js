@@ -119,7 +119,8 @@ export default function Home({ navigation }) {
          <LoadingScreen />
       ):(
          <>
-         <View style={parkingFocus != null ? styles.mapContainer : [styles.mapContainer, {height: '75%'}]}>
+         {/* <View style={parkingFocus != null ? styles.mapContainer : [styles.mapContainer, {height: '75%'}]}> */}
+         <View style={styles.mapContainer}>
             <MapView
                onPress={() => {setParkingFocus(null), setCheckingSpots(false)}}
                style={styles.map }
@@ -165,7 +166,10 @@ export default function Home({ navigation }) {
                      )})
                }
             </MapView>
-               {parkingFocus != null ?
+
+         </View>
+         <View style={styles.footer}>
+         {parkingFocus != null ?
                   <View style={styles.card}>
                      <View >
                         <Image 
@@ -184,62 +188,63 @@ export default function Home({ navigation }) {
                      </TouchableOpacity>
                   </View>
                : null}
-         </View>
-         <RectButton style={parkingFocus != null ? styles.button : [styles.button, {height: 60}]} onPress={() => navigation.navigate("NewReservation", parkings)}>
-            <Text style={styles.buttonText}>
-               Make New Reservation
-            </Text>
-            <View style={styles.buttonIcon}>
-               <Text>
-                  <Icon name="chevron-right" color="#FFF" size={24} />
+            <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
+               <Text style={styles.buttonText}>
+                  Make New Reservation
                </Text>
-            </View>
-         </RectButton>
-         {parkingFocus == null ?
-         <View style={styles.container}>
-            <TouchableOpacity style={styles.preset}>
                <View style={styles.buttonIcon}>
                   <Text>
-                     <Icon name="shopping-cart" color="#000" size={24} />
+                     <Icon name="chevron-right" color="#FFF" size={24} />
                   </Text>
                </View>
-               <View style={styles.presetText}>
-                  <Text style={styles.presetTitle}>
-                     Continente Supermarket
-                  </Text>
-                  <Text style={styles.presetDescription}>
-                     Bragança
-                  </Text>
-               </View>
-               <View style={styles.buttonIcon}>
-                  <Text>
-                     <Icon name="chevron-right" color="#000" size={24} />
-                  </Text>
-               </View>
-            </TouchableOpacity>
+            </RectButton>
+            {parkingFocus == null ?
+            <View style={styles.container}>
+               <TouchableOpacity style={styles.preset}>
+                  <View style={styles.buttonIcon}>
+                     <Text>
+                        <Icon name="shopping-cart" color="#000" size={24} />
+                     </Text>
+                  </View>
+                  <View style={styles.presetText}>
+                     <Text style={styles.presetTitle}>
+                        Continente Supermarket
+                     </Text>
+                     <Text style={styles.presetDescription}>
+                        Bragança
+                     </Text>
+                  </View>
+                  <View style={styles.buttonIcon}>
+                     <Text>
+                        <Icon name="chevron-right" color="#000" size={24} />
+                     </Text>
+                  </View>
+               </TouchableOpacity>
 
-            <TouchableOpacity style={styles.preset}>
-               <View style={styles.buttonIcon}>
-                  <Text>
-                     <Icon name="book" color="#000" size={24} />
-                  </Text>
-               </View>
-               <View style={styles.presetText}>
-                  <Text style={styles.presetTitle}>
-                     Polytechnic Institute of ...
-                  </Text>
-                  <Text style={styles.presetDescription}>
-                     Bragança
-                  </Text>
-               </View>
-               <View style={styles.buttonIcon}>
-                  <Text>
-                     <Icon name="chevron-right" color="#000" size={24} />
-                  </Text>
-               </View>
-            </TouchableOpacity>
-         </View> 
-         : null }
+               <TouchableOpacity style={styles.preset}>
+                  <View style={styles.buttonIcon}>
+                     <Text>
+                        <Icon name="book" color="#000" size={24} />
+                     </Text>
+                  </View>
+                  <View style={styles.presetText}>
+                     <Text style={styles.presetTitle}>
+                        Polytechnic Institute of ...
+                     </Text>
+                     <Text style={styles.presetDescription}>
+                        Bragança
+                     </Text>
+                  </View>
+                  <View style={styles.buttonIcon}>
+                     <Text>
+                        <Icon name="chevron-right" color="#000" size={24} />
+                     </Text>
+                  </View>
+               </TouchableOpacity>
+            </View> 
+            : null }
+         </View>
+         
          <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => navigation.toggleDrawer()}
@@ -257,9 +262,17 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+
+   footer: {
+      position:"absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+   },
+
    card: {
       position: "absolute",
-      bottom: 30,
+      bottom: 80,
       left: 0,
       right: 0,
       elevation: 2,
@@ -400,7 +413,7 @@ const styles = StyleSheet.create({
 
    button: {
       backgroundColor: "#AD00FF",
-      height: '8%',
+      height: 60,
       flexDirection: 'row',
       overflow: 'hidden',
       alignItems: 'center',
@@ -433,7 +446,7 @@ const styles = StyleSheet.create({
    mapContainer: {
       // flex: 1,
       width: '100%',
-      height: '92%',
+      height: '100%',
       // borderRadius: 10,
       // borderWidth: 10,
       justifyContent: 'flex-start',
