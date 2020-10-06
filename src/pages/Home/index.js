@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Feather as Icon, MaterialIcons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
@@ -12,6 +12,7 @@ import LoadingScreen from '../../components/LoadingScreen'
 import ReservationCard from '../../components/ReservationCard'
 import Button from '../../components/Button';
 import { Animated } from 'react-native';
+
 
 export default function Home({ navigation }) {
    const [initialPosition, setInitialPosition] = useState([0, 0])
@@ -161,12 +162,14 @@ export default function Home({ navigation }) {
                            key={index}
                            // pinColor="#34CB79"
                            onPress={() => console.log(checkingSpots)}
-                           icon={require('../../assets/spot_icon.svg')}
                            coordinate={{
                               latitude: spot.coordinates[0],
                               longitude: spot.coordinates[1],
                            }} 
-                        />
+                           // image={require('../../assets/spot_icon.png')}
+                        >
+                           <MaterialIcons name="location-on" color="#34CB79" size={42} />
+                        </Marker>
                      )})
                   :
                      parkings.map((parking, index) => {
@@ -175,11 +178,14 @@ export default function Home({ navigation }) {
                            key={index}
                            // pinColor="#9D11DF"
                            onPress={() => setParkingFocus(parking)}
-                           icon={require('../../assets/parking_icon.svg')}
                            coordinate={{
                               latitude: parking.coordinates[0],
                               longitude: parking.coordinates[1],
-                        }} />
+                           }}
+                           // image={require('../../assets/parking_icon.png')}
+                        >
+                           <MaterialIcons name="location-on" color="#9D11DF" size={42} />
+                        </Marker>
                      )})
                }
             </MapView>
