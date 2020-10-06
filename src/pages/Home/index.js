@@ -198,6 +198,10 @@ export default function Home({ navigation }) {
                {parkingFocus != null ?
                   <View style={styles.card}>
                      <View >
+                        <Image 
+                           style = {{height: 100, resizeMode: 'cover', marginBottom: 6 }} 
+                           source={{uri:parkingFocus.image}}
+                        />
                         <Text style={styles.name} > {parkingFocus.name}</Text>
                      </View>
                      <TouchableOpacity 
@@ -293,7 +297,7 @@ const styles = StyleSheet.create({
       bottom: 30,
       left: 0,
       right: 0,
-      paddingTop: 10,
+      // paddingTop: 10,
       elevation: 2,
       backgroundColor: "#FFF",
       borderTopLeftRadius: 5,
@@ -344,8 +348,8 @@ const styles = StyleSheet.create({
       marginTop: -0.5
    },
    name: {
-      fontSize: 16,
-      marginBottom: 5,
+      fontSize: 18,
+      marginBottom: 6,
       textAlign: 'center'
    },
    radius: {
