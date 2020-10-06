@@ -198,8 +198,7 @@ export default function Home({ navigation }) {
                   </Text>
                </View>
             </RectButton>
-            {parkingFocus == null ?
-            <View style={styles.container}>
+            <View style={parkingFocus == null ? styles.container : {display: "none"}}>
                <TouchableOpacity style={styles.preset}>
                   <View style={styles.buttonIcon}>
                      <Text>
@@ -242,7 +241,6 @@ export default function Home({ navigation }) {
                   </View>
                </TouchableOpacity>
             </View> 
-            : null }
          </View>
          
          <TouchableOpacity
@@ -368,7 +366,7 @@ const styles = StyleSheet.create({
       
     },
    container: {
-      maxHeight: '20%'
+      maxHeight: '20%',
    },
    preset: {
       // marginBottom: 4,
