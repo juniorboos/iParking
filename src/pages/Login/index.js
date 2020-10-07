@@ -47,7 +47,6 @@ export default function Login({ navigation }) {
          .auth()
          .signInWithEmailAndPassword(user, pass)
          .then(() => {
-            createButtonAlert("Autenticado", "Enviando para home")
             console.log("Autenticado - Enviando para rota correta...");
             navigation.reset({
                index: 0,
