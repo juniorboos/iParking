@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useReducer } from 'react';
 import { Feather as Icon, MaterialIcons } from '@expo/vector-icons';
 import { View, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
@@ -113,28 +113,22 @@ export default function Home({ navigation }) {
 
    }
    const axisY = useRef(new Animated.Value(0)).current
+   const axisX = useRef(new Animated.Value(0)).current
 
    function moveFooterDown() {
       Animated.timing(axisY, {
          toValue: 150,
          duration: 500,
          useNativeDriver: true
-      }).start(() => {
-         console.log(axisY)
-      })
-      console.log(axisY)
-      
+      }).start()
    }
+
    function moveFooterUp() {
       Animated.timing(axisY, {
          toValue: 0,
          duration: 500,
          useNativeDriver: true
-      }).start(() => {
-         console.log(axisY)
-      })
-      console.log(axisY)
-      
+      }).start()
    }
    
    return (
