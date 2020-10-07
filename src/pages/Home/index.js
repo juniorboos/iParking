@@ -130,6 +130,15 @@ export default function Home({ navigation }) {
          useNativeDriver: true
       }).start()
    }
+
+   function moveCardLeft() {
+      Animated.timing(axisX, {
+         toValue: 100,
+         duration: 500,
+         useNativeDriver: true
+      }).start()
+   }
+
    
    return (
       <> 
@@ -173,7 +182,7 @@ export default function Home({ navigation }) {
                      return (
                         <Marker
                            key={index}
-                           onPress={() => {setParkingFocus(parking), moveFooterDown()}}
+                           onPress={() => {setParkingFocus(parking), moveFooterDown(), moveCardLeft()}}
                            coordinate={{
                               latitude: parking.coordinates[0],
                               longitude: parking.coordinates[1],
@@ -189,7 +198,7 @@ export default function Home({ navigation }) {
          {/* <View style={parkingFocus == null ? styles.footer: styles.footer2}> */}
          <Animated.View style={[styles.footer, {transform: [{translateY: axisY}]}]}>
             {parkingFocus != null ?
-               <View style={styles.card}>
+               <Animated.View style={[styles.card, {transform: [{translateX: axisX}]}]}>
                   <View >
                      <Image 
                         style = {{height: 100, resizeMode: 'cover', marginBottom: 6 }} 
@@ -205,7 +214,7 @@ export default function Home({ navigation }) {
                      </Text>
                      <Icon name="chevron-right" color="#FFF" size={24} />
                   </TouchableOpacity>
-               </View>
+               </Animated.View>
             : null}
             <RectButton style={styles.button} onPress={() => navigation.navigate("NewReservation", parkings)}>
                <Text style={styles.buttonText}>
@@ -298,7 +307,7 @@ const styles = StyleSheet.create({
    card: {
       position: "absolute",
       top: -200,
-      left: 0,
+      left: -100,
       right: 0,
       elevation: 2,
       backgroundColor: "#FFF",
