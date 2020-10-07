@@ -49,12 +49,16 @@ export default function Login({ navigation }) {
          .then(() => {
             createButtonAlert("Autenticado", "Enviando para home")
             console.log("Autenticado - Enviando para rota correta...");
-            navigation.dispatch(
-               CommonActions.reset({
-                  index: 0,
-                  routes: [{ name: "RoutesDrawer" }],
-               })
-            );
+            navigation.reset({
+               index: 0,
+               routes: [{ name: "RoutesDrawer" }],
+            })
+            // navigation.dispatch(
+            //    CommonActions.reset({
+            //       index: 0,
+            //       routes: [{ name: "RoutesDrawer" }],
+            //    })
+            // );
          })
          .catch((error) => {
             createButtonAlert("Error", error.toString())
