@@ -187,7 +187,7 @@ export default function History({ navigation }) {
                <Text style={option == 'Motorcycle' ? styles.focused : null}>Motorcycle</Text>
             </TouchableOpacity>
          </View>
-         <ScrollView contentContainerStyle={{height: '100%', width: '100%', backgroundColor: '#CCC'}} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+         <ScrollView contentContainerStyle={{}} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                <Accordion
                   sections={
                      option == 'All' ? reservations :
