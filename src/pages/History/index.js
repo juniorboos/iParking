@@ -17,11 +17,12 @@ export default function History({ navigation }) {
    const [motorcycleHistory, setMotorcycleHistory] = useState([])
    const [option, setOption] = useState('All')
    const [refreshing, setRefreshing] = useState(false)
+   const [loading, setLoading] = useState(false)
 
-   async function loadReservations () {
+   async function loadReservations (vehiclesList) {
       const reservationsList = [];
       const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status', '==', 'Finished').get();
-      console.log('Vehicles: ', vehicles)
+      // console.log('Vehicles2: ', vehiclesList)
       snapshot.forEach(doc => {
          const timeFrom = doc.data().timeFrom.toDate()
          const timeTo = doc.data().timeTo.toDate()
@@ -29,15 +30,16 @@ export default function History({ navigation }) {
          const timeToDisplay = (timeTo.toTimeString()).split(':')[0] + ':' + (timeTo.toTimeString()).split(':')[1]
          const vehicleId = doc.data().vehicleId
 
-         const vehicleType =  vehicles.find( ({ id }) => id == vehicleId)
+         const vehicleType =  vehiclesList.find( ({ id }) => id == vehicleId)
+         console.log("Vehicle Type: ", vehicleType.type)
          reservationsList.push({id: doc.id, ...doc.data(), timeFromDisplay: timeFromDisplay, timeToDisplay: timeToDisplay, vehicleType: vehicleType.type})
       })
       setReservations(reservationsList)
       reservationsList.sort(function(a,b){
          return b.timeFrom.toDate() - a.timeFrom.toDate();
       });
-      console.log("Reservations: ")
-      console.log(reservationsList)
+      // console.log("Reservations: ")
+      // console.log(reservationsList)
       setBikeHistory(reservationsList.filter(reservation => reservation.vehicleType == 'Bicycle'))
       setCarHistory(reservationsList.filter(reservation => reservation.vehicleType == 'Car'))
       setMotorcycleHistory(reservationsList.filter(reservation => reservation.vehicleType == 'Motorcycle'))
@@ -50,12 +52,13 @@ export default function History({ navigation }) {
          vehiclesList.push({id: doc.id, ... doc.data()})
       })
       setVehicles(vehiclesList)
-      // console.log("Vehicles: ")
+      // console.log("Vehicles1: ")
       // console.log(vehiclesList)
+      return vehiclesList
    }
 
    useEffect(() => {
-      loadVehicles().then(loadReservations)
+      loadVehicles().then((vehiclesList) => {loadReservations(vehiclesList)})
    },[])
 
    async function goToMaps (request) {
@@ -184,20 +187,21 @@ export default function History({ navigation }) {
                <Text style={option == 'Motorcycle' ? styles.focused : null}>Motorcycle</Text>
             </TouchableOpacity>
          </View>
-         <ScrollView contentContainerStyle={{}} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-            <Accordion
-               sections={
-                  option == 'All' ? reservations :
-                  option == 'Bicycle' ? bikeHistory :
-                  option == 'Car' ? carHistory :
-                  motorcycleHistory}
-               activeSections={activeSections}
-               renderSectionTitle={_renderSectionTitle}
-               renderHeader={_renderHeader}
-               renderContent={_renderContent}
-               renderFooter={_renderFooter}
-               onChange={_updateSections}
-            />
+         <ScrollView contentContainerStyle={{height: '100%', width: '100%', backgroundColor: '#CCC'}} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+               <Accordion
+                  sections={
+                     option == 'All' ? reservations :
+                     option == 'Bicycle' ? bikeHistory :
+                     option == 'Car' ? carHistory :
+                     motorcycleHistory}
+                  activeSections={activeSections}
+                  renderSectionTitle={_renderSectionTitle}
+                  renderHeader={_renderHeader}
+                  renderContent={_renderContent}
+                  renderFooter={_renderFooter}
+                  onChange={_updateSections}
+               />
+            
          </ScrollView>
          
       </View>
