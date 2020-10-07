@@ -168,7 +168,7 @@ export default function Home({ navigation }) {
             </MapView>
 
          </View>
-         <View style={styles.footer}>
+         <View style={parkingFocus == null ? styles.footer: styles.footer2}>
             {parkingFocus != null ?
                <View style={styles.card}>
                   <View >
@@ -198,7 +198,7 @@ export default function Home({ navigation }) {
                   </Text>
                </View>
             </RectButton>
-            <View style={parkingFocus == null ? styles.container : {display: "none"}}>
+            <View style={styles.container}>
                <TouchableOpacity style={styles.preset}>
                   <View style={styles.buttonIcon}>
                      <Text>
@@ -268,9 +268,16 @@ const styles = StyleSheet.create({
       right: 0,
    },
 
+   footer2: {
+      position:"absolute",
+      bottom: -150,
+      left: 0,
+      right: 0,
+   },
+
    card: {
       position: "absolute",
-      bottom: 80,
+      top: -200,
       left: 0,
       right: 0,
       elevation: 2,
