@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Feather as Icon, MaterialIcons } from '@expo/vector-icons';
 import { View, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
@@ -112,6 +112,30 @@ export default function Home({ navigation }) {
       // }, 15000)
 
    }
+   const axisY = useRef(new Animated.Value(0)).current
+
+   function moveFooterDown() {
+      Animated.timing(axisY, {
+         toValue: 150,
+         duration: 500,
+         useNativeDriver: true
+      }).start(() => {
+         console.log(axisY)
+      })
+      console.log(axisY)
+      
+   }
+   function moveFooterUp() {
+      Animated.timing(axisY, {
+         toValue: 0,
+         duration: 500,
+         useNativeDriver: true
+      }).start(() => {
+         console.log(axisY)
+      })
+      console.log(axisY)
+      
+   }
    
    return (
       <> 
@@ -122,7 +146,7 @@ export default function Home({ navigation }) {
          {/* <View style={parkingFocus != null ? styles.mapContainer : [styles.mapContainer, {height: '75%'}]}> */}
          <View style={styles.mapContainer}>
             <MapView
-               onPress={() => {setParkingFocus(null), setCheckingSpots(false)}}
+               onPress={() => {setParkingFocus(null), setCheckingSpots(false), moveFooterUp()}}
                style={styles.map }
                minZoomLevel={13}
                loadingEnabled={true}
@@ -155,7 +179,7 @@ export default function Home({ navigation }) {
                      return (
                         <Marker
                            key={index}
-                           onPress={() => setParkingFocus(parking)}
+                           onPress={() => {setParkingFocus(parking), moveFooterDown()}}
                            coordinate={{
                               latitude: parking.coordinates[0],
                               longitude: parking.coordinates[1],
@@ -168,7 +192,8 @@ export default function Home({ navigation }) {
             </MapView>
 
          </View>
-         <View style={parkingFocus == null ? styles.footer: styles.footer2}>
+         {/* <View style={parkingFocus == null ? styles.footer: styles.footer2}> */}
+         <Animated.View style={[styles.footer, {transform: [{translateY: axisY}]}]}>
             {parkingFocus != null ?
                <View style={styles.card}>
                   <View >
@@ -241,7 +266,8 @@ export default function Home({ navigation }) {
                   </View>
                </TouchableOpacity>
             </View> 
-         </View>
+         </Animated.View>
+         {/* </View> */}
          
          <TouchableOpacity
           activeOpacity={0.7}
