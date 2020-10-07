@@ -113,7 +113,7 @@ export default function Home({ navigation }) {
 
    }
    const axisY = useRef(new Animated.Value(0)).current
-   const axisX = useRef(new Animated.Value(0)).current
+   const fadeIn = useRef(new Animated.Value(0)).current
 
    function moveFooterDown() {
       Animated.timing(axisY, {
@@ -131,9 +131,9 @@ export default function Home({ navigation }) {
       }).start()
    }
 
-   function moveCardLeft() {
-      Animated.timing(axisX, {
-         toValue: 100,
+   function fadeCard() {
+      Animated.timing(fadeIn, {
+         toValue: 1,
          duration: 500,
          useNativeDriver: true
       }).start()
@@ -182,7 +182,7 @@ export default function Home({ navigation }) {
                      return (
                         <Marker
                            key={index}
-                           onPress={() => {setParkingFocus(parking), moveFooterDown(), moveCardLeft()}}
+                           onPress={() => {setParkingFocus(parking), moveFooterDown(), fadeCard()}}
                            coordinate={{
                               latitude: parking.coordinates[0],
                               longitude: parking.coordinates[1],
@@ -198,7 +198,7 @@ export default function Home({ navigation }) {
          {/* <View style={parkingFocus == null ? styles.footer: styles.footer2}> */}
          <Animated.View style={[styles.footer, {transform: [{translateY: axisY}]}]}>
             {parkingFocus != null ?
-               <Animated.View style={[styles.card, {transform: [{translateX: axisX}]}]}>
+               <Animated.View style={[styles.card, {opacity: fadeIn}]}>
                   <View >
                      <Image 
                         style = {{height: 100, resizeMode: 'cover', marginBottom: 6 }} 
@@ -305,10 +305,7 @@ const styles = StyleSheet.create({
    },
 
    card: {
-      position: "absolute",
-      top: -200,
-      left: -100,
-      right: 0,
+      marginBottom: 8,
       elevation: 2,
       backgroundColor: "#FFF",
       borderTopLeftRadius: 5,
