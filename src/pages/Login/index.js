@@ -47,6 +47,7 @@ export default function Login({ navigation }) {
          .auth()
          .signInWithEmailAndPassword(user, pass)
          .then(() => {
+            createButtonAlert("Autenticado", "Enviando para home")
             console.log("Autenticado - Enviando para rota correta...");
             navigation.dispatch(
                CommonActions.reset({
@@ -56,6 +57,7 @@ export default function Login({ navigation }) {
             );
          })
          .catch((error) => {
+            createButtonAlert("Error", error.toString())
             if (
                error == "auth/wrong-password" ||
                error ==
@@ -67,7 +69,7 @@ export default function Login({ navigation }) {
                return createButtonAlert("Error", "Invalid Email!");
             }
             console.log(error);
-            alert(error);
+            // alert(error);
          });
    };
 
