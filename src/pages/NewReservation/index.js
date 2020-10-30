@@ -149,7 +149,7 @@ export default function NewReservation({ navigation, route }) {
          console.log(response.id)
          
          console.log("Aguardando resposta... ")
-         const readFlag = false
+         var readFlag = false
          const userRef = firebase.database().ref('Users/' + userId).child('Request')
          userRef.on('value', snapshot => {
             console.log("Encontrou")
