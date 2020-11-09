@@ -114,7 +114,7 @@ export default function History({ navigation }) {
    const _renderContent = section => {
       return (
         <View style={styles.content}>
-          <Text style={styles.detailsText}>{section.region} - Spot {section.spotWon}</Text>
+          <Text style={styles.detailsText}>{section.regionName} - Spot {section.spotWon}</Text>
           <Text style={styles.detailsText}>{section.vehicleModel}</Text>
           <Text style={styles.detailsText}>€ {section.priceWon}</Text>
         </View>

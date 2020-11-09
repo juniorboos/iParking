@@ -131,7 +131,8 @@ export default function NewReservation({ navigation, route }) {
       db.collection('Users').doc(userId).collection('Requests').add({
          parking: parking,
          parkingName: (parkings.find( ({ id }) => id === parking)).name,
-         region: (regions.find( ({ id }) => id === region)).name,
+         region: region,
+         regionName: (regions.find( ({ id }) => id === region)).name,
          vehicleModel: (vehicles.find( ({ id }) => id === vehicle)).name,
          vehicleId: vehicle,
          spotWanted: spot,
