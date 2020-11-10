@@ -65,51 +65,26 @@ export default function Home({ navigation }) {
       const { data } = await firebase.functions().httpsCallable('searchSpots')({
          parking: parkingId
       })
-      const spotsList = [
-         {
-            parking:"IPB",
-            driverId:"1UgX8NkcA7foU4GJdQZmtN5ez5x1",
-            coordinates:[41.799392,-6.768929],
-            spotId:"001"
-         },
-         {
-            parking:"IPB",
-            driverId:"1UgX8NkcA7foU4GJdQZmtN5ez5x1",
-            coordinates:[41.796452,-6.767786],
-            spotId:"002"
-         },
-         {
-            parking:"IPB",
-            driverId:"1UgX8NkcA7foU4GJdQZmtN5ez5x1",
-            coordinates:[41.797770, -6.767289],
-            spotId:"003"
-         },
-         {
-            parking:"IPB",
-            driverId:"1UgX8NkcA7foU4GJdQZmtN5ez5x1",
-            coordinates:[41.798982, -6.765439],
-            spotId:"004"
-         }
-      ]
+      const spotsList = []
       console.log("Aguardando spots...")
-      setCheckingSpots(true)
+      // setCheckingSpots(true)
       setSpots(spotsList)
-      // const userRef = firebase.database().ref('Users/' + userId).child('SearchSpots')
-      // userRef.on('child_added', snapshot => {
-      //    if(snapshot.val() != null) {
-      //       console.log("Spot found")
-      //       spotsList.push(snapshot.val())
-      //       console.log(snapshot.val())
-      //    }
-      // })
+      const userRef = firebase.database().ref('Users/' + userId).child('SearchSpots')
+      userRef.on('child_added', snapshot => {
+         if(snapshot.val() != null) {
+            console.log("Spot found")
+            spotsList.push(snapshot.val())
+            console.log(snapshot.val())
+         }
+      })
 
-      // setTimeout(() => {
-      //    console.log("Parou de escutar")
-      //    setCheckingSpots(true)
-      //    setSpots(spotsList)
-      //    userRef.off()
-      //    userRef.remove()
-      // }, 15000)
+      setTimeout(() => {
+         console.log("Parou de escutar")
+         setSpots(spotsList)
+         setCheckingSpots(true)
+         userRef.off()
+         userRef.remove()
+      }, 5000)
 
    }
    const axisY = useRef(new Animated.Value(0)).current
