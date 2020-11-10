@@ -63,20 +63,13 @@ export default function Reservations({ navigation }) {
 
       setLoadingState(true)
       console.log(loadingState)
-      const logRef = db.collection('Users').doc(userId).collection('Requests').doc(reservation.id).collection('Log')
       const reqRef = db.collection('Users').doc(userId).collection('Requests').doc(reservation.id)
-      const actualDate = new Date()
       // console.log(reservation.id)
       if (reservation.userStatus == false) {
          console.log("Entrando...")
          reqRef.update({
             userStatus: true
          }).then(() => {
-            logRef.add({
-               action: "Arrived",
-               time: actualDate.toISOString()
-            })
-         }).finally(() => {
             loadReservations().then(() => {
                setLoadingState(false)
             })
@@ -86,11 +79,6 @@ export default function Reservations({ navigation }) {
          reqRef.update({
             userStatus: false
          }).then(() => {
-            logRef.add({
-               action: "Departed",
-               time: actualDate.toISOString()
-            })
-         }).finally(() => {
             loadReservations().then(() => {
                setLoadingState(false)
             })
