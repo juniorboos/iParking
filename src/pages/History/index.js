@@ -38,8 +38,8 @@ export default function History({ navigation }) {
       reservationsList.sort(function(a,b){
          return b.timeFrom.toDate() - a.timeFrom.toDate();
       });
-      // console.log("Reservations: ")
-      // console.log(reservationsList)
+      console.log("Reservations: ")
+      console.log(reservationsList)
       setBikeHistory(reservationsList.filter(reservation => reservation.vehicleType == 'Bicycle'))
       setCarHistory(reservationsList.filter(reservation => reservation.vehicleType == 'Car'))
       setMotorcycleHistory(reservationsList.filter(reservation => reservation.vehicleType == 'Motorcycle'))

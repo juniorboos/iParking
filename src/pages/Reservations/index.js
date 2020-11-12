@@ -44,8 +44,8 @@ export default function Reservations({ navigation }) {
 
       setReservations(reservationsList)
 
-      // console.log("Reservations: ")
-      // console.log(reservationsList)
+      console.log("Reservations: ")
+      console.log(reservationsList)
    }
 
    useEffect(() => {

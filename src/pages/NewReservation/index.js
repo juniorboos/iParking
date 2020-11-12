@@ -94,6 +94,7 @@ export default function NewReservation({ navigation, route }) {
       console.log('parking: ' + parking);
       console.log('parkingName: ' + (parkings.find( ({ id }) => id === parking)).name);
       console.log('region: ' + region);
+      console.log('regionName: ' + (regions.find( ({ id }) => id === region)).name);
       console.log('vehicleId: ' + vehicle);
       console.log('vehicleModel: ' + (vehicles.find( ({ id }) => id === vehicle)).name);
       console.log('spotWanted: ' + spot);
@@ -131,8 +132,8 @@ export default function NewReservation({ navigation, route }) {
       db.collection('Users').doc(userId).collection('Requests').add({
          parking: parking,
          parkingName: (parkings.find( ({ id }) => id === parking)).name,
-         region: 'ESTiG',
-         // regionName: (regions.find( ({ id }) => id === region)).name,
+         region: region,
+         regionName: (regions.find( ({ id }) => id === region)).name,
          vehicleModel: (vehicles.find( ({ id }) => id === vehicle)).name,
          vehicleId: vehicle,
          spotWanted: spot,
@@ -210,6 +211,7 @@ export default function NewReservation({ navigation, route }) {
             response.forEach(doc => {
                regionsList.push({id: doc.id, ...doc.data()})
             })
+            console.log(regionsList)
             setRegions(regionsList)
          })
    }
