@@ -44,7 +44,7 @@ A mobile application for users who want to request spots in a multi-agent Smart 
 
 Milton Boos Junior - miltonboosj@gmail.com
 
-Project Link: [https://github.com/juniorboos/Smart-Parking](https://github.com/juniorboos/Smart-Parking)
+Project Link: [https://github.com/juniorboos/iParking](https://github.com/juniorboos/iParking)
 
 
 
