@@ -32,19 +32,19 @@ export default function Profile({ navigation }) {
    const [vehicleModel, setVehicleModel] = useState('')
    const [vehiclePlate, setVehiclePlate] = useState('')
 
-   useEffect(() => {      
+   useEffect(() => {
       loadUser()
       loadVehicles()
-   },[])
+   }, [])
 
-   function displayModal (show) {
+   function displayModal(show) {
       setVehicleType('Bicycle')
       setVehicleModel()
       setVehiclePlate()
       setEditMode(false)
       setModalState(show)
    }
-   function displayModalEdit (vehicle) {
+   function displayModalEdit(vehicle) {
       setVehicleId(vehicle.id)
       setVehicleType(vehicle.type)
       setVehicleModel(vehicle.model)
@@ -57,18 +57,18 @@ export default function Profile({ navigation }) {
       await db.collection('Users').doc(userId).get()
          .then((doc) => setUserData(doc.data()))
    }
-   
+
    async function loadVehicles() {
       const vehiclesList = []
       const snapshot = await db.collection('Users').doc(userId).collection('Vehicles').get()
       snapshot.forEach(doc => {
          console.log(doc.data())
-         vehiclesList.push({id: doc.id, ... doc.data()})
+         vehiclesList.push({ id: doc.id, ...doc.data() })
       })
       setVehicles(vehiclesList);
    }
 
-   async function addVehicle () {
+   async function addVehicle() {
       console.log('entrou')
       await db.collection('Users').doc(userId).collection('Vehicles').add({
          type: vehicleType,
@@ -82,7 +82,7 @@ export default function Profile({ navigation }) {
       })
    }
 
-   async function editVehicle (vehicleId) {
+   async function editVehicle(vehicleId) {
       await db.collection('Users').doc(userId).collection('Vehicles').doc(vehicleId).set({
          type: vehicleType,
          model: vehicleModel,
@@ -98,43 +98,43 @@ export default function Profile({ navigation }) {
    return (
       <View style={styles.container}>
          <LinearGradient
-          colors={['#AD00FF', '#E950D0', '#C7A9D6' ]}
-          style={styles.linearGradient}
-        >
-           <Modal
+            colors={['#AD00FF', '#E950D0', '#C7A9D6']}
+            style={styles.linearGradient}
+         >
+            <Modal
                isVisible={modalState}
                onBackdropPress={() => displayModal(false)}>
                <View style={styles.modalView}>
-                  <SelectInput 
+                  <SelectInput
                      label="Type"
                      pickerItens={vehicleTypes}
                      mode="dropdown"
                      selectedValue={vehicleType}
-                     onValueChange={(itemValue, itemIndex) => setVehicleType(itemValue)}/>
+                     onValueChange={(itemValue, itemIndex) => setVehicleType(itemValue)} />
                   <Input defaultValue={vehicleModel} label="Model" placeholder="Ford Fiesta" onChangeText={setVehicleModel} />
-                  {vehicleType != 'Bicycle' ? 
+                  {vehicleType != 'Bicycle' ?
                      <Input defaultValue={vehiclePlate} label="License plate" placeholder="MC-11-22" onChangeText={setVehiclePlate} />
-                  : null }
-                  <TouchableOpacity 
+                     : null}
+                  <TouchableOpacity
                      style={styles.button}
                      onPress={editMode == false ? addVehicle : () => editVehicle(vehicleId)}>
                      {editMode == false ? (
                         <Text style={styles.buttonText}>
                            Add vehicle
                         </Text>
-                     ):(
-                        <Text style={styles.buttonText}>
-                           Edit vehicle
-                        </Text>
-                     )}
-                     
+                     ) : (
+                           <Text style={styles.buttonText}>
+                              Edit vehicle
+                           </Text>
+                        )}
+
                   </TouchableOpacity>
 
                </View>
             </Modal>
 
 
-           <View style={styles.header}>
+            <View style={styles.header}>
                <View style={styles.side}>
                   <TouchableOpacity onPress={() => navigation.goBack()}>
                      <Feather name="chevron-left" size={24} color="#FFF" />
@@ -156,11 +156,11 @@ export default function Profile({ navigation }) {
                <View style={styles.personalInfo}>
                   <View style={styles.infoContainer}>
                      <View style={styles.infoField}>
-                        <Feather name="mail" size={24} color="#000" style={styles.infoIcon}/>
+                        <Feather name="mail" size={24} color="#000" style={styles.infoIcon} />
                         <Text style={styles.fieldLabel}>{userData.email}</Text>
                      </View>
                      <View style={styles.infoField}>
-                        <Feather name="phone" size={24} color="#000" style={styles.infoIcon}/>
+                        <Feather name="phone" size={24} color="#000" style={styles.infoIcon} />
                         <Text>+{userData.phone}</Text>
                      </View>
                   </View>
@@ -181,24 +181,25 @@ export default function Profile({ navigation }) {
                      {vehicles.map((vehicle, index) => {
                         return (
                            <View key={index} style={styles.vehicleField}>
-                              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                 {vehicle.type == 'Bicycle' 
-                                 ? <MaterialIcons name="directions-bike" size={24} color="black" style={styles.infoIcon} />
-                                 : vehicle.type == 'Motorcycle' 
-                                 ? <FontAwesome name="motorcycle" size={24} color="black" style={styles.infoIcon} />
-                                 : <FontAwesome name="car" size={24} color="black" style={styles.infoIcon} />}
-                                 
-                        <Text style={styles.fieldLabel}>{vehicle.model} {vehicle.plate}</Text>
+                              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                 {vehicle.type == 'Bicycle'
+                                    ? <MaterialIcons name="directions-bike" size={24} color="black" style={styles.infoIcon} />
+                                    : vehicle.type == 'Motorcycle'
+                                       ? <FontAwesome name="motorcycle" size={24} color="black" style={styles.infoIcon} />
+                                       : <FontAwesome name="car" size={24} color="black" style={styles.infoIcon} />}
+
+                                 <Text style={styles.fieldLabel}>{vehicle.model} {vehicle.plate}</Text>
                               </View>
                               <TouchableOpacity style={styles.vehicleEditIcons} onPress={() => displayModalEdit(vehicle)}>
                                  <Feather name="edit" color="#000" size={24} />
                               </TouchableOpacity>
                            </View>
-                        )})}
+                        )
+                     })}
                   </View>
                </View>
             </View>
-        </LinearGradient>
+         </LinearGradient>
       </View>
    )
 }
