@@ -31,10 +31,13 @@ export default function Profile({ navigation }) {
    const [vehicleType, setVehicleType] = useState('Bicycle')
    const [vehicleModel, setVehicleModel] = useState('')
    const [vehiclePlate, setVehiclePlate] = useState('')
+   const [reservations, setReservations] = useState(0)
+   const [duration, setDuration] = useState(0)
 
    useEffect(() => {
       loadUser()
       loadVehicles()
+      loadReservations()
    }, [])
 
    function displayModal(show) {
@@ -53,6 +56,23 @@ export default function Profile({ navigation }) {
       setModalState(true)
    }
 
+   async function loadReservations() {
+      const snapshot = await db.collection('Users').doc(userId).collection('Requests').where('status','==','Finished').get()
+      let reservationCount = 0
+      let durationCount = 0
+      console.log("Reservations:")
+      snapshot.forEach((reservation) => {
+         const data = reservation.data()
+         const duration = new Date ((data.timeTo).toDate() - (data.timeFrom).toDate())
+         const minutes = duration.getMinutes() + (duration.getHours() * 60)
+         durationCount += minutes
+         reservationCount += 1
+      })
+      setReservations(reservationCount.toString())
+      setDuration(Math.floor(durationCount/60).toString())
+
+   }
+
    async function loadUser() {
       await db.collection('Users').doc(userId).get()
          .then((doc) => setUserData(doc.data()))
@@ -62,7 +82,7 @@ export default function Profile({ navigation }) {
       const vehiclesList = []
       const snapshot = await db.collection('Users').doc(userId).collection('Vehicles').get()
       snapshot.forEach(doc => {
-         console.log(doc.data())
+         // console.log(doc.data())
          vehiclesList.push({ id: doc.id, ...doc.data() })
       })
       setVehicles(vehiclesList);
@@ -141,7 +161,7 @@ export default function Profile({ navigation }) {
                   </TouchableOpacity>
                </View>
                <View style={styles.center}>
-                  <Text style={styles.profileName}>{userData.fullName}</Text>
+                  <Text style={styles.profileName}>Profile</Text>
                </View>
                <View style={styles.side}>
                   <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
@@ -155,6 +175,10 @@ export default function Profile({ navigation }) {
                </View>
                <View style={styles.personalInfo}>
                   <View style={styles.infoContainer}>
+                     <View style={styles.infoField}>
+                        <Feather name="user" size={24} color="#000" style={styles.infoIcon} />
+                        <Text style={styles.fieldLabel}>{userData.fullName}</Text>
+                     </View>
                      <View style={styles.infoField}>
                         <Feather name="mail" size={24} color="#000" style={styles.infoIcon} />
                         <Text style={styles.fieldLabel}>{userData.email}</Text>
@@ -199,12 +223,40 @@ export default function Profile({ navigation }) {
                   </View>
                </View>
             </View>
+            <View style={styles.stampsContainer}>
+               <View style={styles.stamp}>
+                  <Text>{reservations}</Text>
+                  <Text>reservations</Text>
+               </View>
+               <View style={styles.stamp}>
+                  <Text>{duration} hours</Text>
+                  <Text>parked</Text>
+               </View>           
+            </View>
          </LinearGradient>
       </View>
    )
 }
 
 const styles = StyleSheet.create({
+
+   stampsContainer: {
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+   },
+
+   stamp: {
+      borderWidth: 1,
+      borderColor: '#000',
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      backgroundColor: '#FFF',
+      alignItems: 'center',
+      justifyContent: 'center'
+   },
+
    modalView: {
       backgroundColor: '#EBEBEB',
       borderColor: '#000',
