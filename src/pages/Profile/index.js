@@ -164,9 +164,9 @@ export default function Profile({ navigation }) {
                         <Text>+{userData.phone}</Text>
                      </View>
                   </View>
-                  <TouchableOpacity style={styles.editInfo} onPress={() => console.log()}>
+                  {/* <TouchableOpacity style={styles.editInfo} onPress={() => console.log()}>
                      <Feather name="edit" color="#000" size={24} />
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                </View>
             </View>
             <View style={styles.cardContainer}>
