@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Feather, MaterialIcons, FontAwesome, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { View, StyleSheet, Text, TextInput, ScrollView, Alert, TouchableOpacity, Slider } from 'react-native';
+import { View, StyleSheet, Text, ImageBackground, ScrollView, Alert, TouchableOpacity, Slider } from 'react-native';
 import firebase, { db } from "../../services/firebase.js";
 import { LinearGradient } from 'expo-linear-gradient'
 import Modal from 'react-native-modal';
@@ -225,17 +225,23 @@ export default function Profile({ navigation }) {
             </View>
             <View style={styles.stampsContainer}>
                <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                  <View style={styles.stamp}>
-                     <Text style={{fontSize: 36, fontWeight: 'bold'}}>{reservations}</Text>
-                  </View>
-                  <Text>reservations</Text>
+                  <ImageBackground 
+                     source={require('../../assets/badge.png')} 
+                     style={styles.stamp}
+                     imageStyle={{ width: 100, height: 100 }}>
+                     <Text style={styles.badgeLabel}>{reservations}</Text>
+                  </ImageBackground>
+                  <Text style={styles.badgeDescription}>reservations</Text>
                </View>
 
                <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                  <View style={styles.stamp}>
-                     <Text style={{fontSize: 36, fontWeight: 'bold'}}>{duration}h</Text>
-                  </View> 
-                  <Text>parked</Text>
+                  <ImageBackground 
+                     source={require('../../assets/badge.png')} 
+                     style={styles.stamp}
+                     imageStyle={{ width: 100, height: 100 }}>
+                     <Text style={styles.badgeLabel}>{duration}h</Text>
+                  </ImageBackground> 
+                  <Text style={styles.badgeDescription}>parked</Text>
                </View>
                
                          
@@ -247,6 +253,20 @@ export default function Profile({ navigation }) {
 
 const styles = StyleSheet.create({
 
+   badgeLabel: {
+      fontSize: 36, 
+      fontWeight: 'bold', 
+      color: 'white'
+   },
+
+   badgeDescription: {
+      fontSize: 18, 
+      color: 'white', 
+      textShadowColor: '#000', 
+      textShadowOffset: {width:2, height:2}, 
+      textShadowRadius: 1
+   },
+
    stampsContainer: {
       width: '100%',
       flexDirection: 'row',
@@ -254,12 +274,8 @@ const styles = StyleSheet.create({
    },
 
    stamp: {
-      borderWidth: 1,
-      borderColor: '#000',
       width: 100,
       height: 100,
-      borderRadius: 50,
-      backgroundColor: '#FFF',
       alignItems: 'center',
       justifyContent: 'center'
    },
