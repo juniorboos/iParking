@@ -256,7 +256,10 @@ const styles = StyleSheet.create({
    badgeLabel: {
       fontSize: 36, 
       fontWeight: 'bold', 
-      color: 'white'
+      color: 'white',
+      textShadowColor: '#000', 
+      textShadowOffset: {width:2, height:2}, 
+      textShadowRadius: 1
    },
 
    badgeDescription: {
