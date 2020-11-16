@@ -169,6 +169,27 @@ export default function Profile({ navigation }) {
                   </TouchableOpacity>
                </View>
             </View>
+            <View style={styles.stampsContainer}>
+               <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                  <ImageBackground 
+                     source={require('../../assets/badge.png')} 
+                     style={styles.stamp}
+                     imageStyle={{ width: 100, height: 100 }}>
+                     <Text style={styles.badgeLabel}>{reservations}</Text>
+                  </ImageBackground>
+                  <Text style={styles.badgeDescription}>reservations</Text>
+               </View>
+
+               <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                  <ImageBackground 
+                     source={require('../../assets/badge.png')} 
+                     style={styles.stamp}
+                     imageStyle={{ width: 100, height: 100 }}>
+                     <Text style={styles.badgeLabel}>{duration}h</Text>
+                  </ImageBackground> 
+                  <Text style={styles.badgeDescription}>parked</Text>
+               </View>
+            </View>
             <View style={styles.cardContainer}>
                <View style={styles.labelContainer}>
                   <Text style={styles.cardLabel}>Personal Information</Text>
@@ -188,9 +209,6 @@ export default function Profile({ navigation }) {
                         <Text>+{userData.phone}</Text>
                      </View>
                   </View>
-                  {/* <TouchableOpacity style={styles.editInfo} onPress={() => console.log()}>
-                     <Feather name="edit" color="#000" size={24} />
-                  </TouchableOpacity> */}
                </View>
             </View>
             <View style={styles.cardContainer}>
@@ -223,29 +241,7 @@ export default function Profile({ navigation }) {
                   </View>
                </View>
             </View>
-            <View style={styles.stampsContainer}>
-               <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                  <ImageBackground 
-                     source={require('../../assets/badge.png')} 
-                     style={styles.stamp}
-                     imageStyle={{ width: 100, height: 100 }}>
-                     <Text style={styles.badgeLabel}>{reservations}</Text>
-                  </ImageBackground>
-                  <Text style={styles.badgeDescription}>reservations</Text>
-               </View>
-
-               <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                  <ImageBackground 
-                     source={require('../../assets/badge.png')} 
-                     style={styles.stamp}
-                     imageStyle={{ width: 100, height: 100 }}>
-                     <Text style={styles.badgeLabel}>{duration}h</Text>
-                  </ImageBackground> 
-                  <Text style={styles.badgeDescription}>parked</Text>
-               </View>
-               
-                         
-            </View>
+            
          </LinearGradient>
       </View>
    )
@@ -274,6 +270,7 @@ const styles = StyleSheet.create({
       width: '100%',
       flexDirection: 'row',
       justifyContent: 'space-around',
+      marginBottom: 16,
    },
 
    stamp: {
