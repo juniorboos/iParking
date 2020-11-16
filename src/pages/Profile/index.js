@@ -224,14 +224,21 @@ export default function Profile({ navigation }) {
                </View>
             </View>
             <View style={styles.stampsContainer}>
-               <View style={styles.stamp}>
-                  <Text>{reservations}</Text>
+               <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                  <View style={styles.stamp}>
+                     <Text style={{fontSize: 36, fontWeight: 'bold'}}>{reservations}</Text>
+                  </View>
                   <Text>reservations</Text>
                </View>
-               <View style={styles.stamp}>
-                  <Text>{duration} hours</Text>
+
+               <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                  <View style={styles.stamp}>
+                     <Text style={{fontSize: 36, fontWeight: 'bold'}}>{duration}h</Text>
+                  </View> 
                   <Text>parked</Text>
-               </View>           
+               </View>
+               
+                         
             </View>
          </LinearGradient>
       </View>
