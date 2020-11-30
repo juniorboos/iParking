@@ -94,7 +94,7 @@ export default function Home({ navigation }) {
          setCheckingSpots(true);
          userRef.off();
          userRef.remove();
-      }, 5000);
+      }, 9000);
    }
    const axisY = useRef(new Animated.Value(0)).current;
    const fadeIn = useRef(new Animated.Value(0)).current;
