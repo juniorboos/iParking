@@ -11,6 +11,7 @@ import {
 import MapView, { Marker, Callout } from "react-native-maps";
 import Constants from "expo-constants";
 import * as Location from "expo-location";
+import * as Notifications from "expo-notifications";
 import { RectButton } from "react-native-gesture-handler";
 import firebase, { db } from "../../services/firebase";
 
@@ -39,6 +40,15 @@ export default function Home({ navigation }) {
                Alert.alert(
                   "Ooooops...",
                   "Precisamos de sua permissão para obter a localização"
+               );
+               return;
+            }
+
+            const notificationsPermission = await Notifications.requestPermissionsAsync();
+            if (notificationsPermission.status !== "granted") {
+               Alert.alert(
+                  "Ooooops...",
+                  "Precisamos de sua permissão notificações!"
                );
                return;
             }

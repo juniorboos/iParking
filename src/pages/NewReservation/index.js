@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Feather } from "@expo/vector-icons";
 import Constants from "expo-constants";
+import * as Notifications from "expo-notifications";
 import {
    View,
    StyleSheet,
@@ -156,10 +157,21 @@ export default function NewReservation({ navigation, route }) {
                userStatus: false,
             });
 
+         const trigger = new Date(timestampFrom - 30 * 60 * 1000);
+
          await firebase
             .database()
             .ref("Users/" + userId + "/Request/")
             .remove();
+
+         console.log("Notification: " + trigger);
+
+         Notifications.scheduleNotificationAsync({
+            content: {
+               title: "Your reservation will start in 30 minutes!",
+            },
+            trigger,
+         });
 
          navigation.navigate("Reservations");
          setLoading(false);
