@@ -157,7 +157,8 @@ export default function NewReservation({ navigation, route }) {
                userStatus: false,
             });
 
-         const trigger = new Date(timestampFrom - 30 * 60 * 1000);
+         const initialTrigger = new Date(timestampFrom - 30 * 60 * 1000);
+         const finishTrigger = new Date(timestampTo - 30 * 60 * 1000);
 
          await firebase
             .database()
@@ -170,7 +171,14 @@ export default function NewReservation({ navigation, route }) {
             content: {
                title: "Your reservation will start in 30 minutes!",
             },
-            trigger,
+            trigger: initialTrigger,
+         });
+
+         Notifications.scheduleNotificationAsync({
+            content: {
+               title: "Your reservation will end soon!",
+            },
+            trigger: finishTrigger,
          });
 
          navigation.navigate("Reservations");
