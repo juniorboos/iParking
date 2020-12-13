@@ -328,7 +328,7 @@ export default function NewReservation({ navigation, route }) {
    return (
       <>
          {loading == true ? (
-            <LoadingScreen />
+            <LoadingScreen message="Looking for a spot" />
          ) : (
             <View style={styles.wrapper}>
                <AppBar
