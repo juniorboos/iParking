@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
-import { Feather as Icon, MaterialIcons } from "@expo/vector-icons";
+import { Feather as Icon, MaterialIcons, Entypo } from "@expo/vector-icons";
 import {
    View,
    Image,
@@ -55,19 +55,19 @@ export default function Home({ navigation }) {
 
             const location = await Location.getCurrentPositionAsync();
             const { latitude, longitude } = location.coords;
-
-            setInitialPosition([latitude, longitude]);
+            const coordinates = [latitude, longitude];
+            loadParkings(coordinates);
          } catch (error) {
             loadPosition();
          }
       }
 
-      async function loadParkings() {
+      async function loadParkings(coordinates) {
          const parkingsList = [];
          const query = GeoFirestore.collection("Parkings").near({
             center: new firebase.firestore.GeoPoint(
-               initialPosition[0],
-               initialPosition[1]
+               coordinates[0],
+               coordinates[1]
             ),
             radius: 10,
          });
@@ -82,13 +82,14 @@ export default function Home({ navigation }) {
                   ],
                });
             });
+            setInitialPosition(coordinates);
             setParkings(parkingsList);
             console.log("Parkings: ");
             console.log(parkingsList);
          });
       }
 
-      loadPosition().then(() => loadParkings());
+      loadPosition();
    }, []);
 
    async function checkSpots(parkingId) {
@@ -208,9 +209,9 @@ export default function Home({ navigation }) {
                                       longitude: parking.coordinates[1],
                                    }}
                                 >
-                                   <MaterialIcons
-                                      name="location-on"
-                                      color="#9D11DF"
+                                   <Entypo
+                                      name="dot-single"
+                                      color="#34CB79"
                                       size={42}
                                    />
                                 </Marker>
