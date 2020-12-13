@@ -13,7 +13,7 @@ import Constants from "expo-constants";
 import * as Location from "expo-location";
 import * as Notifications from "expo-notifications";
 import { RectButton } from "react-native-gesture-handler";
-import firebase, { db } from "../../services/firebase";
+import firebase, { db, GeoFirestore } from "../../services/firebase";
 
 import CustomCallout from "../../components/CustomCallout";
 import LoadingScreen from "../../components/LoadingScreen";
@@ -64,16 +64,31 @@ export default function Home({ navigation }) {
 
       async function loadParkings() {
          const parkingsList = [];
-         const snapshot = await db.collection("Parkings").get();
-         snapshot.forEach((doc) => {
-            parkingsList.push({ id: doc.id, ...doc.data() });
+         const query = GeoFirestore.collection("Parkings").near({
+            center: new firebase.firestore.GeoPoint(
+               initialPosition[0],
+               initialPosition[1]
+            ),
+            radius: 10,
          });
-         setParkings(parkingsList);
-         console.log("Parkings: ");
-         console.log(parkingsList);
+         query.get().then((snapshot) => {
+            snapshot.forEach((doc) => {
+               parkingsList.push({
+                  id: doc.id,
+                  ...doc.data(),
+                  coordinates: [
+                     doc.data().g.geopoint.latitude,
+                     doc.data().g.geopoint.longitude,
+                  ],
+               });
+            });
+            setParkings(parkingsList);
+            console.log("Parkings: ");
+            console.log(parkingsList);
+         });
       }
-      loadParkings();
-      loadPosition();
+
+      loadPosition().then(() => loadParkings());
    }, []);
 
    async function checkSpots(parkingId) {
