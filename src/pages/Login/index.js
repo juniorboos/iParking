@@ -1,20 +1,58 @@
-import React, { useState } from 'react';
-import Constants from 'expo-constants';
-import { View, ImageBackground, Text, Image, Alert, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect } from "react";
+import Constants from "expo-constants";
+import {
+   View,
+   ImageBackground,
+   Text,
+   Image,
+   Alert,
+   StyleSheet,
+   KeyboardAvoidingView,
+   Platform,
+} from "react-native";
 import { CommonActions } from "@react-navigation/native";
 import firebase from "../../services/firebase.js";
-
+import * as Location from "expo-location";
+import * as Notifications from "expo-notifications";
 import Input from "../../components/Input";
-import Button from '../../components/Button';
+import Button from "../../components/Button";
 
 export default function Login({ navigation }) {
    const [user, setUser] = useState("junior_boos@live.com");
    const [pass, setPass] = useState("123456");
 
-
    const createButtonAlert = (title, msg) => {
       Alert.alert(title, msg, [{ text: "OK" }], { cancelable: false });
    };
+
+   useEffect(() => {
+      const getLocationPermission = async () => {
+         try {
+            const { status } = await Location.requestPermissionsAsync();
+
+            if (status !== "granted") {
+               Alert.alert(
+                  "Ooooops...",
+                  "Precisamos de sua permissão para obter a localização"
+               );
+               return;
+            }
+
+            const notificationsPermission = await Notifications.requestPermissionsAsync();
+            if (notificationsPermission.status !== "granted") {
+               Alert.alert(
+                  "Ooooops...",
+                  "Precisamos de sua permissão notificações!"
+               );
+               return;
+            }
+         } catch (error) {
+            console.log(error);
+         }
+      };
+
+      getLocationPermission();
+   }, []);
 
    // function sendToCorretRoute() {
    //    firebase
@@ -51,7 +89,7 @@ export default function Login({ navigation }) {
             navigation.reset({
                index: 0,
                routes: [{ name: "RoutesDrawer" }],
-            })
+            });
             // navigation.dispatch(
             //    CommonActions.reset({
             //       index: 0,
@@ -60,11 +98,11 @@ export default function Login({ navigation }) {
             // );
          })
          .catch((error) => {
-            createButtonAlert("Error", error.toString())
+            createButtonAlert("Error", error.toString());
             if (
                error == "auth/wrong-password" ||
                error ==
-               "The password is invalid or the user does not have a password."
+                  "The password is invalid or the user does not have a password."
             ) {
                return createButtonAlert("Error", "Wrong Password!");
             }
@@ -77,13 +115,17 @@ export default function Login({ navigation }) {
    };
 
    return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView
+         style={{ flex: 1 }}
+         behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
          <ImageBackground
-            source={require('../../assets/splash.png')}
+            source={require("../../assets/splash.png")}
             style={styles.container}
-            imageStyle={{ width: 295, height: 482 }}>
+            imageStyle={{ width: 295, height: 482 }}
+         >
             <View style={styles.image}>
-               <Image source={require('../../assets/logo.png')} />
+               <Image source={require("../../assets/logo.png")} />
             </View>
             <View style={styles.main}>
                <Input
@@ -100,25 +142,32 @@ export default function Login({ navigation }) {
                   value={pass}
                   secureTextEntry={true}
                   onChangeText={(text) => setPass(text)}
-                  
                />
                <Button
                   backgroundColor="#AD00FF"
                   color="#FFFFFF"
                   fontSize={24}
                   justify="center"
-                  onPress={loginUser}>
+                  onPress={loginUser}
+               >
                   Login
                </Button>
             </View>
             <View style={styles.footer}>
-               <Text style={styles.description}>Don’t have an account?
-                  <Text style={styles.signup} onPress={() => navigation.navigate("Register")}> Sign up!</Text>
+               <Text style={styles.description}>
+                  Don’t have an account?
+                  <Text
+                     style={styles.signup}
+                     onPress={() => navigation.navigate("Register")}
+                  >
+                     {" "}
+                     Sign up!
+                  </Text>
                </Text>
             </View>
          </ImageBackground>
       </KeyboardAvoidingView>
-   )
+   );
 }
 
 const styles = StyleSheet.create({
@@ -128,44 +177,44 @@ const styles = StyleSheet.create({
    },
 
    image: {
-      alignSelf: 'center',
+      alignSelf: "center",
       paddingTop: 35 + Constants.statusBarHeight,
    },
 
    main: {
       flex: 1,
-      justifyContent: 'center',
+      justifyContent: "center",
    },
 
    title: {
-      color: '#322153',
+      color: "#322153",
       fontSize: 32,
       maxWidth: 260,
       marginTop: 64,
    },
 
    description: {
-      textAlign: 'center',
-      color: '#333333',
+      textAlign: "center",
+      color: "#333333",
       fontSize: 16,
       maxWidth: 260,
       lineHeight: 24,
    },
 
    signup: {
-      color: '#AD00FF',
-      fontWeight: 'bold',
+      color: "#AD00FF",
+      fontWeight: "bold",
    },
 
    footer: {
-      alignSelf: 'center',
+      alignSelf: "center",
    },
 
    select: {},
 
    input: {
       height: 60,
-      backgroundColor: '#FFF',
+      backgroundColor: "#FFF",
       borderRadius: 10,
       marginBottom: 8,
       paddingHorizontal: 24,
@@ -173,30 +222,29 @@ const styles = StyleSheet.create({
    },
 
    button: {
-      backgroundColor: '#34CB79',
+      backgroundColor: "#34CB79",
       height: 60,
-      flexDirection: 'row',
+      flexDirection: "row",
       borderRadius: 10,
-      overflow: 'hidden',
-      alignItems: 'center',
+      overflow: "hidden",
+      alignItems: "center",
       marginTop: 8,
    },
 
    buttonIcon: {
       height: 60,
       width: 60,
-      backgroundColor: 'rgba(0, 0, 0, 0.1)',
-      justifyContent: 'center',
-      alignItems: 'center'
+      backgroundColor: "rgba(0, 0, 0, 0.1)",
+      justifyContent: "center",
+      alignItems: "center",
    },
 
    buttonText: {
       flex: 1,
-      justifyContent: 'center',
-      textAlign: 'center',
-      color: '#FFF',
-      fontFamily: 'Roboto_500Medium',
+      justifyContent: "center",
+      textAlign: "center",
+      color: "#FFF",
+      fontFamily: "Roboto_500Medium",
       fontSize: 16,
-   }
-
+   },
 });

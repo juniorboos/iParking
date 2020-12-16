@@ -223,7 +223,7 @@ export default function NewReservation({ navigation, route }) {
                   readFlag = true;
                   console.log(snapshot.val());
                   if (snapshot.val().reservation == "true") {
-                     Alert.alert(
+                     return Alert.alert(
                         "Success",
                         "You won the spot: " +
                            snapshot.val().spot.toString() +
@@ -239,7 +239,7 @@ export default function NewReservation({ navigation, route }) {
                         { cancelable: false }
                      );
                   } else {
-                     Alert.alert(
+                     return Alert.alert(
                         "Failed",
                         "No spot available",
                         [
@@ -252,6 +252,14 @@ export default function NewReservation({ navigation, route }) {
                      );
                   }
                }
+               setTimeout(() => {
+                  setLoading(false);
+                  return Alert.alert("Timed out", "Try again later.", [
+                     {
+                        text: "Ok",
+                     },
+                  ]);
+               }, 20000);
             });
          })
          .catch((erro) => {

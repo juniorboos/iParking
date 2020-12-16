@@ -34,25 +34,6 @@ export default function Home({ navigation }) {
    useEffect(() => {
       async function loadPosition() {
          try {
-            const { status } = await Location.requestPermissionsAsync();
-
-            if (status !== "granted") {
-               Alert.alert(
-                  "Ooooops...",
-                  "Precisamos de sua permissão para obter a localização"
-               );
-               return;
-            }
-
-            const notificationsPermission = await Notifications.requestPermissionsAsync();
-            if (notificationsPermission.status !== "granted") {
-               Alert.alert(
-                  "Ooooops...",
-                  "Precisamos de sua permissão notificações!"
-               );
-               return;
-            }
-
             const location = await Location.getCurrentPositionAsync();
             const { latitude, longitude } = location.coords;
             const coordinates = [latitude, longitude];
@@ -187,8 +168,8 @@ export default function Home({ navigation }) {
                                       longitude: spot.coordinates[1],
                                    }}
                                 >
-                                   <MaterialIcons
-                                      name="location-on"
+                                   <Entypo
+                                      name="dot-single"
                                       color="#34CB79"
                                       size={42}
                                    />
@@ -209,9 +190,9 @@ export default function Home({ navigation }) {
                                       longitude: parking.coordinates[1],
                                    }}
                                 >
-                                   <Entypo
-                                      name="dot-single"
-                                      color="#34CB79"
+                                   <MaterialIcons
+                                      name="location-on"
+                                      color="#AD00FF"
                                       size={42}
                                    />
                                 </Marker>
