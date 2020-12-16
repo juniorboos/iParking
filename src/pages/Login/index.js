@@ -37,12 +37,18 @@ export default function Login({ navigation }) {
                );
                return;
             }
+         } catch (error) {
+            console.log(error);
+         }
+      };
 
-            const notificationsPermission = await Notifications.requestPermissionsAsync();
-            if (notificationsPermission.status !== "granted") {
+      const getNotificationPermission = async () => {
+         try {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== "granted") {
                Alert.alert(
                   "Ooooops...",
-                  "Precisamos de sua permissão notificações!"
+                  "Precisamos de sua permissão para notificações!"
                );
                return;
             }
@@ -51,7 +57,7 @@ export default function Login({ navigation }) {
          }
       };
 
-      getLocationPermission();
+      getLocationPermission().then(() => getNotificationPermission());
    }, []);
 
    // function sendToCorretRoute() {

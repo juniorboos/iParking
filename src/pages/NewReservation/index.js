@@ -253,12 +253,14 @@ export default function NewReservation({ navigation, route }) {
                   }
                }
                setTimeout(() => {
-                  setLoading(false);
-                  return Alert.alert("Timed out", "Try again later.", [
-                     {
-                        text: "Ok",
-                     },
-                  ]);
+                  if (readFlag) {
+                     setLoading(false);
+                     return Alert.alert("Timed out", "Try again later.", [
+                        {
+                           text: "Ok",
+                        },
+                     ]);
+                  }
                }, 20000);
             });
          })
